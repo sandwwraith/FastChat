@@ -1,10 +1,13 @@
 package com.sandwwraith.fastchat.social;
 
 import android.app.Activity;
-import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.util.Log;
+
+import com.sandwwraith.fastchat.AuthActivity;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,7 +26,7 @@ public class SocialManager {
     public enum Types {
         TYPE_VK, TYPE_DUMMY;
 
-        public static final String IntentParam = "INTENT_PARAM_TYPE";
+        public static final String Intent_Param = "INTENT_PARAM_TYPE";
 
         public String getTokenString() {
             if (this == TYPE_VK) return "type_vk_token";
@@ -89,7 +92,7 @@ public class SocialManager {
      * @param type Тип соцсети
      */
     public void validateToken(Types type) {
-        SharedPreferences sp = prefHost.getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(prefHost.getApplicationContext());
         if (!sp.contains(type.getTokenString())) {
             //No saved token
             Log.d(LOG_TAG, "No saved token");
@@ -109,7 +112,29 @@ public class SocialManager {
      * @param type Тип соцсети
      */
     public void startAuth(Types type) {
-        //Code code...
+        Intent intent = new Intent(prefHost, AuthActivity.class);
+        intent.putExtra(Types.Intent_Param, type.name());
+        prefHost.startActivityForResult(intent, 1);
+    }
+
+    public void continueAuth(Intent intent) {
+        String type_s = intent.getStringExtra(Types.Intent_Param);
+        Types type = Types.valueOf(type_s);
+        String tok = intent.getStringExtra(type.getTokenString());
+        String id = intent.getStringExtra(type.getIdString());
+
+        Log.d(LOG_TAG, "Token: " + tok);
+        Log.d(LOG_TAG, "ID: " + id);
+
+        //Saving
+        SharedPreferences.Editor sp = PreferenceManager.getDefaultSharedPreferences(prefHost.getApplicationContext())
+                .edit();
+        sp.putString(type.getTokenString(), tok);
+        sp.putString(type.getIdString(), id);
+        sp.apply();
+
+        //Launch updateInfo
+        new UserInfoTask().execute(type_s, tok, id);
     }
 
     /**

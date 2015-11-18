@@ -27,6 +27,8 @@
             android:enabled="true"
             android:exported="false" >
         </service>
+
+        <activity android:name=".AuthActivity" />
     </application>
 
 </manifest>

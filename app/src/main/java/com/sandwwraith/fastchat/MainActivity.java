@@ -58,6 +58,15 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            manager.continueAuth(data);
+        } else {
+            notifyUser("OAuth failed");
+        }
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -132,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
         if (success) {
             ((TextView) findViewById(R.id.vk_text)).setText(user.getFirstName() + " " + user.getLastName());
         } else {
-            notifyUser("Auth failed");
+            notifyUser("User info get failed");
         }
     }
 

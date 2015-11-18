@@ -8,9 +8,9 @@ import java.net.URL;
  * ITMO University, 2015.
  */
 public interface SocialWrapper {
-    String retrieveToken(URL url);
+    String retrieveToken(String url);
 
-    String retrieveId(URL url);
+    String retrieveId(String url);
 
     URL generateUserInfoRequest(String token, String id);
 

@@ -12,12 +12,12 @@ public class VkWrapper implements SocialWrapper {
     private final String LOG_TAG = "vk_wrapper";
 
     @Override
-    public String retrieveToken(URL url) {
+    public String retrieveToken(String url) {
         return null;
     }
 
     @Override
-    public String retrieveId(URL url) {
+    public String retrieveId(String url) {
         return null;
     }
 
