@@ -1,8 +1,6 @@
 package com.sandwwraith.fastchat;
 
 import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -10,14 +8,11 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
-
-import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity implements MessengerService.MessageReceiver {
 
@@ -25,6 +20,7 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
     //Refer to documentation, "Bound service"
     //or to lesson #5
     private MessengerService messenger = null;
+    private Snackbar snack = null;
     private ServiceConnection connection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
@@ -42,11 +38,8 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
 
         }
     };
-
-
     private EditText inputMessage;
     private TextView messageView;
-    Snackbar snack = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,27 +48,21 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        messageView = (TextView) findViewById(R.id.text);
-        inputMessage = (EditText) findViewById(R.id.input);
+        messageView = (TextView) findViewById(R.id.greetings);
 
-        Intent intent = new Intent(this,MessengerService.class);
+        /*Intent intent = new Intent(this,MessengerService.class);
         bindService(intent, connection, Context.BIND_AUTO_CREATE);
 
         snack = Snackbar.make(messageView, R.string.connecting, Snackbar.LENGTH_INDEFINITE)
                 .setAction("Action", null);
-        snack.show();
+        snack.show();*/
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //Sending the message
-                if (messenger != null) {
-                    String s = inputMessage.getText().toString();
-                    messageView.append(">");
-                    messageView.append(s);
-                    messageView.append("\n");
-                    messenger.send(s);
-                }
+                //TODO: Implement
             }
         });
     }
@@ -113,5 +100,14 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
     @Override
     public void processMessage(String msg) {
         messageView.append(msg);
+    }
+
+    public void onAuthorizationClick(View view) {
+        int id = view.getId();
+
+        if (id == R.id.fb_image) {
+            Snackbar.make(messageView, "Sorry, facebook currently unavailable", Snackbar.LENGTH_SHORT)
+                    .setAction("Action", null).show();
+        }
     }
 }

@@ -23,16 +23,10 @@ public class MessengerService extends Service {
     //Refer to documentation, "Bound service"
     //or to lesson #5
     private final MessengerBinder binder = new MessengerBinder();
-
-    public interface MessageReceiver {
-        void processMessage(String msg);
-    }
-
-    public class MessengerBinder extends Binder {
-        public MessengerService getService() {
-            return MessengerService.this;
-        }
-    }
+    private Socket sock = null;
+    private Thread launcher = null;
+    private MessengerService.MessageReceiver callback = null;
+    private ReceiveTask receiveTask = null;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -49,11 +43,6 @@ public class MessengerService extends Service {
 
     }
 
-    private Socket sock = null;
-    private Thread launcher = null;
-    private MessengerService.MessageReceiver callback = null;
-    private ReceiveTask receiveTask = null;
-
     /**
      * Открывает сокет в отдельном потоке
      */
@@ -64,6 +53,7 @@ public class MessengerService extends Service {
 
     /**
      * Делает join() для потока, открывающего соединение
+     *
      * @throws IllegalStateException Если запрос на соединение не был послан
      */
     private void waitConnection() throws IllegalStateException {
@@ -111,6 +101,16 @@ public class MessengerService extends Service {
 
     }
 
+    public interface MessageReceiver {
+        void processMessage(String msg);
+    }
+
+    public class MessengerBinder extends Binder {
+        public MessengerService getService() {
+            return MessengerService.this;
+        }
+    }
+
     //TODO: Rework to use AsyncTask such we can use callbacks -
     //чтобы, например, делать активной кнопку при успехе соединения и т.п.
     private class SimpleConnection implements Runnable {
@@ -120,6 +120,7 @@ public class MessengerService extends Service {
 
             try {
                 if (sock != null) sock.close();
+                //TODO: Add timeout
                 sock = new Socket(MessengerService.ADDRESS, 2539);
             } catch (IOException e) {
                 Log.e(MessengerService.LOG_TAG, "Can't open socket: " + e.getMessage());
