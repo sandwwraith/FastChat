@@ -1,26 +1,34 @@
 package com.sandwwraith.fastchat;
 
 import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
 import android.content.ServiceConnection;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity implements MessengerService.MessageReceiver {
+import com.sandwwraith.fastchat.social.SocialManager;
+import com.sandwwraith.fastchat.social.SocialUser;
+
+public class MainActivity extends AppCompatActivity implements MessengerService.MessageReceiver, SocialManager.SocialManagerCallback {
+
+    private SocialManager manager = null;
+    private Snackbar snack = null;
 
     //Connection to service
     //Refer to documentation, "Bound service"
     //or to lesson #5
     private MessengerService messenger = null;
-    private Snackbar snack = null;
     private ServiceConnection connection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
@@ -30,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
             //Connecting immediately
             messenger.connect();
             messenger.startReceiving(MainActivity.this);
-            snack.dismiss();
+            if (snack != null) snack.dismiss();
         }
 
         @Override
@@ -38,8 +46,16 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
 
         }
     };
-    private EditText inputMessage;
     private TextView messageView;
+
+    private void connectService() {
+        Intent intent = new Intent(this, MessengerService.class);
+        bindService(intent, connection, Context.BIND_AUTO_CREATE);
+
+        snack = Snackbar.make(messageView, R.string.connecting, Snackbar.LENGTH_INDEFINITE)
+                .setAction("Action", null);
+        snack.show();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,26 +66,28 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
 
         messageView = (TextView) findViewById(R.id.greetings);
 
-        /*Intent intent = new Intent(this,MessengerService.class);
-        bindService(intent, connection, Context.BIND_AUTO_CREATE);
+        //Checking connection
+        if (!isOnline()) {
+            notifyUser(R.string.network_NA);
+        } else {
+            connectService();
+            manager = new SocialManager(this, this);
+            manager.validateToken(SocialManager.Types.TYPE_VK);
+        }
 
-        snack = Snackbar.make(messageView, R.string.connecting, Snackbar.LENGTH_INDEFINITE)
-                .setAction("Action", null);
-        snack.show();*/
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //Sending the message
-                //TODO: Implement
+                //TODO: Move to other screen
             }
-        });
+        });*/
     }
 
     @Override
     protected void onDestroy() {
-        if (messenger!=null) {
+        if (messenger != null) {
             unbindService(connection);
         }
         super.onDestroy();
@@ -102,12 +120,51 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
         messageView.append(msg);
     }
 
-    public void onAuthorizationClick(View view) {
-        int id = view.getId();
+    @Override
+    public void onValidationFail(SocialManager.Types type) {
+        notifyUser("Auth required");
+        AuthorizationClick clicker = new AuthorizationClick();
+        findViewById(R.id.vk_image).setOnClickListener(clicker);
+    }
 
-        if (id == R.id.fb_image) {
-            Snackbar.make(messageView, "Sorry, facebook currently unavailable", Snackbar.LENGTH_SHORT)
-                    .setAction("Action", null).show();
+    @Override
+    public void onUserInfoUpdated(boolean success, SocialUser user) {
+        if (success) {
+            ((TextView) findViewById(R.id.vk_text)).setText(user.getFirstName() + " " + user.getLastName());
+        } else {
+            notifyUser("Auth failed");
         }
+    }
+
+    public class AuthorizationClick implements View.OnClickListener {
+
+        @Override
+        public void onClick(View view) {
+            int id = view.getId();
+
+            if (id == R.id.fb_image) {
+                notifyUser("Sorry, facebook currently unavailable");
+            } else if (id == R.id.vk_image) {
+                Log.d("Main_activity", "Starting auth");
+                manager.startAuth(SocialManager.Types.TYPE_VK);
+            }
+        }
+    }
+
+    public void notifyUser(String message) {
+        Snackbar.make(messageView, message, Snackbar.LENGTH_SHORT)
+                .setAction("Action", null).show();
+    }
+
+    public void notifyUser(int resourceId) {
+        String msg = getResources().getString(resourceId);
+        notifyUser(msg);
+    }
+
+    public boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnected();
     }
 }
