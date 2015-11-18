@@ -94,6 +94,7 @@ public class MessengerService extends Service {
      */
     public void close() throws IOException {
         waitConnection();
+        send("\u0003"); //Ctrl+C
         if (receiveTask != null)
             receiveTask.cancel(false);
         if (sock != null)
