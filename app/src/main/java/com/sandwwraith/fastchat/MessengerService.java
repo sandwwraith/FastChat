@@ -12,20 +12,22 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 
 public class MessengerService extends Service {
 
     public static final String LOG_TAG = "Main_Tag";
     public static final String ADDRESS = "192.168.2.18";
+    public static final int TIMEOUT = 5000; //in ms
 
     //Connection to service
     //Refer to documentation, "Bound service"
     //or to lesson #5
     private final MessengerBinder binder = new MessengerBinder();
     private Socket sock = null;
-    private Thread launcher = null;
-    private MessengerService.MessageReceiver callback = null;
+    private boolean socketAvailable = false;
+    private ServerInteract callback = null;
     private ReceiveTask receiveTask = null;
 
     @Override
@@ -45,43 +47,37 @@ public class MessengerService extends Service {
 
     /**
      * Открывает сокет в отдельном потоке
+     *
+     * @param callback Вызывается onConnectResult при завершении
      */
-    public void connect() {
-        launcher = new Thread(new SimpleConnection());
-        launcher.start();
+    public void connect(ServerInteract callback) {
+        this.callback = callback;
+        new ConnectionTask().execute();
     }
 
-    /**
-     * Делает join() для потока, открывающего соединение
-     *
-     * @throws IllegalStateException Если запрос на соединение не был послан
-     */
-    private void waitConnection() throws IllegalStateException {
-        //Waiting for socket to connect
-        if (launcher != null) {
-            try {
-                launcher.join();
-            } catch (InterruptedException e) {
-                Log.wtf(MessengerService.LOG_TAG, e.getMessage());
-            }
-        } else {
-            throw new IllegalStateException("Sending to unlaunched socket");
-        }
+    public boolean connected() {
+        return socketAvailable;
     }
 
     /**
      * Посылает сообщение на сервер
+     *
      * @param msg Текст сообщения
+     * @throws IllegalStateException Если сокет не соединён
      */
-    public void send(String msg) {
+    public void send(String msg) throws IllegalStateException {
+        if (!connected()) throw new IllegalStateException("Not connected");
         new Thread(new DataSender(msg)).start();
     }
 
     /**
      * Запускает поток, который будет "слушать" входящий с сервера поток
+     *
      * @param callback Функиция, которая будет вызвана при получении сообщения
+     * @throws IllegalStateException Если сокет не соединён
      */
-    public void startReceiving(MessengerService.MessageReceiver callback) {
+    public void setReceiver(ServerInteract callback) throws IllegalStateException {
+        if (!connected()) throw new IllegalStateException("Not connected");
         this.callback = callback;
         receiveTask = new ReceiveTask();
         receiveTask.execute();
@@ -90,20 +86,22 @@ public class MessengerService extends Service {
     /**
      * Обрывает приём данных и закрывает сокет
      * TODO: Дождаться всех запущенных тредов. Или сделать как forceclose() ?
+     *
      * @throws IOException Если что-то пошло не так.
      */
     public void close() throws IOException {
-        waitConnection();
+        if (!connected()) return;
         send("\u0003"); //Ctrl+C
         if (receiveTask != null)
             receiveTask.cancel(false);
         if (sock != null)
             sock.close();
-
     }
 
-    public interface MessageReceiver {
+    public interface ServerInteract {
         void processMessage(String msg);
+
+        void onConnectResult(boolean success);
     }
 
     public class MessengerBinder extends Binder {
@@ -112,27 +110,33 @@ public class MessengerService extends Service {
         }
     }
 
-    //TODO: Rework to use AsyncTask such we can use callbacks -
-    //чтобы, например, делать активной кнопку при успехе соединения и т.п.
-    private class SimpleConnection implements Runnable {
+    /**
+     * Открывает сокет
+     */
+    private class ConnectionTask extends AsyncTask<Void, Void, Boolean> {
         @Override
-        public void run() {
+        protected void onPostExecute(Boolean aBoolean) {
+            socketAvailable = aBoolean;
+            callback.onConnectResult(aBoolean);
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
             BufferedReader in = null;
 
             try {
-                if (sock != null) sock.close();
-                //TODO: Add timeout
-                sock = new Socket(MessengerService.ADDRESS, 2539);
+                if (sock != null) sock.close(); //TODO: Think how can it happen and what to do
+                sock = new Socket();
+                sock.connect(new InetSocketAddress(ADDRESS, 2539), TIMEOUT);
             } catch (IOException e) {
                 Log.e(MessengerService.LOG_TAG, "Can't open socket: " + e.getMessage());
-                return;
+                return false;
             }
-
             try {
                 //Приём сообщения, сразу посылаемого сервером новым клиентам
                 in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
                 Log.i(MessengerService.LOG_TAG, "Greetings: " + in.readLine());
-
+                return true;
             } catch (IOException e) {
                 Log.e(MessengerService.LOG_TAG, "Cannot read greetings: " + e.getMessage());
                 try {
@@ -145,9 +149,13 @@ public class MessengerService extends Service {
                     Log.wtf(MessengerService.LOG_TAG, ee.getMessage());
                 }
             }
+            return false;
         }
     }
 
+    /**
+     * Запускает один поток для отправки сообщения на сервер, закрывается
+     */
     private class DataSender implements Runnable {
         private final String message;
 
@@ -157,7 +165,6 @@ public class MessengerService extends Service {
 
         @Override
         public void run() {
-            waitConnection();
 
             OutputStream out = null;
             try {
@@ -185,7 +192,6 @@ public class MessengerService extends Service {
 
         @Override
         protected Void doInBackground(Void... params) {
-            waitConnection();
             InputStream in = null;
             try {
                 in = sock.getInputStream();

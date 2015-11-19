@@ -5,4 +5,5 @@
     <string name="messagefield_hint">Type your message here…</string>
     <string name="greetings">Greetings, traveller!</string>
     <string name="network_NA">Network not available</string>
+    <string name="service_NA">Sorry, service is temporarily unavailable</string>
 </resources>

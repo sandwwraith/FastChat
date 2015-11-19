@@ -21,7 +21,7 @@ import android.widget.TextView;
 import com.sandwwraith.fastchat.social.SocialManager;
 import com.sandwwraith.fastchat.social.SocialUser;
 
-public class MainActivity extends AppCompatActivity implements MessengerService.MessageReceiver, SocialManager.SocialManagerCallback {
+public class MainActivity extends AppCompatActivity implements MessengerService.ServerInteract, SocialManager.SocialManagerCallback {
 
     private SocialManager manager = null;
     private Snackbar snack = null;
@@ -37,9 +37,7 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
             MainActivity.this.messenger = binder.getService();
 
             //Connecting immediately
-            messenger.connect();
-            messenger.startReceiving(MainActivity.this);
-            if (snack != null) snack.dismiss();
+            messenger.connect(MainActivity.this);
         }
 
         @Override
@@ -80,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
         if (!isOnline()) {
             notifyUser(R.string.network_NA);
         } else {
-            //connectService();
+            connectService();
             manager = new SocialManager(this, this);
             manager.validateToken(SocialManager.Types.TYPE_VK);
         }
@@ -132,6 +130,16 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
     }
 
     @Override
+    public void onConnectResult(boolean success) {
+        if (success) {
+            messenger.setReceiver(MainActivity.this);
+            if (snack != null) snack.dismiss();
+        } else {
+            notifyUser(R.string.service_NA);
+        }
+    }
+
+    @Override
     public void onUserInfoUpdated(boolean success, SocialUser user) {
         if (success) {
             if (user.getType() == SocialManager.Types.TYPE_VK) {
@@ -142,8 +150,10 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
                 fab.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        //Starting queue
-                        notifyUser("Not implemented yet");
+                        if (!messenger.connected())
+                            notifyUser(R.string.service_NA);
+                            //Starting queue
+                        else notifyUser("Not implemented yet");
                     }
                 });
             }
@@ -160,7 +170,7 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
             int id = view.getId();
 
             if (id == R.id.fb_image) {
-                notifyUser("Sorry, facebook currently unavailable");
+                notifyUser("Sorry, facebook currently not implemented");
             } else if (id == R.id.vk_image) {
                 Log.d("Main_activity", "Starting auth");
                 manager.startAuth(SocialManager.Types.TYPE_VK);
