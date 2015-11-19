@@ -8,6 +8,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -83,14 +84,6 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
             manager = new SocialManager(this, this);
             manager.validateToken(SocialManager.Types.TYPE_VK);
         }
-
-        /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //Starting new activity
-            }
-        });*/
     }
 
     @Override
@@ -132,13 +125,29 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
     public void onValidationFail(SocialManager.Types type) {
         notifyUser("Auth required");
         AuthorizationClick clicker = new AuthorizationClick();
-        findViewById(R.id.vk_image).setOnClickListener(clicker);
+        if (type == SocialManager.Types.TYPE_VK)
+            findViewById(R.id.vk_image).setOnClickListener(clicker);
+        else
+            findViewById(R.id.fb_image).setOnClickListener(clicker);
     }
 
     @Override
     public void onUserInfoUpdated(boolean success, SocialUser user) {
         if (success) {
-            ((TextView) findViewById(R.id.vk_text)).setText(user.toString());
+            if (user.getType() == SocialManager.Types.TYPE_VK) {
+
+                ((TextView) findViewById(R.id.vk_text)).setText(user.toString());
+
+                FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+                fab.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        //Starting queue
+                        notifyUser("Not implemented yet");
+                    }
+                });
+            }
+
         } else {
             notifyUser("User info get failed");
         }
