@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
         if (!isOnline()) {
             notifyUser(R.string.network_NA);
         } else {
-            connectService();
+            //connectService();
             manager = new SocialManager(this, this);
             manager.validateToken(SocialManager.Types.TYPE_VK);
         }
@@ -88,8 +88,7 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Sending the message
-                //TODO: Move to other screen
+                //Starting new activity
             }
         });*/
     }
@@ -139,7 +138,7 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
     @Override
     public void onUserInfoUpdated(boolean success, SocialUser user) {
         if (success) {
-            ((TextView) findViewById(R.id.vk_text)).setText(user.getFirstName() + " " + user.getLastName());
+            ((TextView) findViewById(R.id.vk_text)).setText(user.toString());
         } else {
             notifyUser("User info get failed");
         }

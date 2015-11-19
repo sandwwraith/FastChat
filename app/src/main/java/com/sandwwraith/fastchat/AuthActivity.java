@@ -22,7 +22,7 @@ public class AuthActivity extends AppCompatActivity {
         Intent i = getIntent();
         final Types type = Types.valueOf(i.getStringExtra(Types.Intent_Param));
         final SocialWrapper wrapper = type.getWrapper();
-        web.loadUrl(wrapper.generateTokenRequest().toString());
+        web.loadUrl(wrapper.generateTokenRequest());
         web.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {

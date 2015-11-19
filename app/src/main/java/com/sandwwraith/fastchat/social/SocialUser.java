@@ -1,5 +1,6 @@
 package com.sandwwraith.fastchat.social;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
@@ -8,10 +9,15 @@ import java.net.URL;
  */
 public class SocialUser {
 
-    public SocialUser(String id_str, SocialManager.Types type, String firstName, String lastName, URL link) {
+    public SocialUser(String id_str, SocialManager.Types type, String firstName, String lastName, String link) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.link = link;
+        try {
+            this.link = new URL(link);
+        } catch (MalformedURLException e) {
+            //.... I hope this won't be seen by anybody
+            throw new RuntimeException("Checked exceptions sucks");
+        }
         this.id = Long.parseLong(id_str);
         this.type = type;
     }
@@ -30,6 +36,10 @@ public class SocialUser {
 
     public long getId() {
         return id;
+    }
+
+    public String toString() {
+        return firstName + " " + lastName;
     }
 
     public SocialManager.Types getType() {

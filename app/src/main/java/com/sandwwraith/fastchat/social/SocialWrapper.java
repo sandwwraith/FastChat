@@ -14,7 +14,7 @@ public interface SocialWrapper {
 
     URL generateUserInfoRequest(String token, String id);
 
-    URL generateTokenRequest();
+    String generateTokenRequest(); //String because WebView requires string
 
     SocialUser parseUserData(InputStream in);
 }
