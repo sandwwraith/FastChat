@@ -23,7 +23,7 @@ public class VkWrapper implements SocialWrapper {
         if (url.contains("#access_token=")) {
             android.net.Uri uri = android.net.Uri.parse(url);
             String authCode = uri.getFragment().substring(13); // access_token=
-            int amp_pos = authCode.indexOf('&');
+            int amp_pos = authCode.indexOf('&'); //&user_id=54577011
             authCode = authCode.substring(0, amp_pos);
             return authCode;
         }
@@ -35,8 +35,8 @@ public class VkWrapper implements SocialWrapper {
         if (url.contains("#access_token=")) {
             android.net.Uri uri = android.net.Uri.parse(url);
             String authCode = uri.getFragment().substring(13); // access_token=
-            int amp_pos = authCode.lastIndexOf('&');
-            authCode = authCode.substring(amp_pos);
+            int amp_pos = authCode.lastIndexOf('&'); //&user_id=54577011
+            authCode = authCode.substring(amp_pos + 9);
             return authCode;
         }
         return null;
@@ -45,7 +45,7 @@ public class VkWrapper implements SocialWrapper {
     @Override
     public URL generateUserInfoRequest(String token, String id) {
         String part1 = "https://api.vk.com/method/users.get?v=5.8&users_ids=";
-        String part2 = "&fields=photo_100&access_token=";
+        String part2 = "&fields=photo_100,sex&access_token=";
         URL res = null;
         try {
             res = new URL(part1 + id + part2 + token);
@@ -77,6 +77,7 @@ public class VkWrapper implements SocialWrapper {
             reader.beginArray();
             reader.beginObject();
             String first = "", last = "", id = "-1";
+            int sex = 0;
             while (reader.hasNext()) {
                 String section = reader.nextName();
                 switch (section) {
@@ -89,6 +90,8 @@ public class VkWrapper implements SocialWrapper {
                     case "last_name":
                         last = reader.nextString();
                         break;
+                    case "sex":
+                        sex = Integer.parseInt(reader.nextString());
                     default:
                         reader.skipValue();
                 }
@@ -97,7 +100,7 @@ public class VkWrapper implements SocialWrapper {
             reader.endArray();
             reader.endObject();
             String link = "https://vk.com/id" + id;
-            return new SocialUser(id, SocialManager.Types.TYPE_VK, first, last, link);
+            return new SocialUser(id, SocialManager.Types.TYPE_VK, first, last, link, sex);
 
         } catch (IOException e) {
             Log.e(LOG_TAG, "Parser exception: " + e.getMessage());

@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
         if (resultCode == RESULT_OK) {
             manager.continueAuth(data);
         } else {
-            notifyUser("OAuth failed"); //TODO: Normal info w/ errors
+            notifyUser("OAuth failed"); //TODO: Normal info w/ errors. Remember, user can press back from auth screen
         }
     }
 
