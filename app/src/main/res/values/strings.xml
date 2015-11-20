@@ -2,6 +2,8 @@
     <string name="app_name">FastChat</string>
     <string name="action_settings">Settings</string>
     <string name="connecting">Connecting…</string>
+    <string name="loading">Loading…</string>
+    <string name="not_authorized">Not authorized</string>
     <string name="messagefield_hint">Type your message here…</string>
     <string name="greetings">Greetings, traveller!</string>
     <string name="network_NA">Network not available</string>

@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
         if (resultCode == RESULT_OK) {
             manager.continueAuth(data);
         } else {
-            notifyUser("OAuth failed");
+            notifyUser("OAuth failed"); //TODO: Normal info w/ errors
         }
     }
 
@@ -78,7 +78,6 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
         if (!isOnline()) {
             notifyUser(R.string.network_NA);
         } else {
-            connectService();
             manager = new SocialManager(this, this);
             manager.validateToken(SocialManager.Types.TYPE_VK);
         }
@@ -121,17 +120,25 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
 
     @Override
     public void onValidationFail(SocialManager.Types type) {
-        notifyUser("Auth required");
         AuthorizationClick clicker = new AuthorizationClick();
-        if (type == SocialManager.Types.TYPE_VK)
+        if (type == SocialManager.Types.TYPE_VK) {
             findViewById(R.id.vk_image).setOnClickListener(clicker);
-        else
+            ((TextView) findViewById(R.id.vk_text)).setText(R.string.not_authorized);
+        } else
             findViewById(R.id.fb_image).setOnClickListener(clicker);
     }
 
     @Override
     public void onConnectResult(boolean success) {
         if (success) {
+            FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    //Starting queue
+                    notifyUser("Not implemented yet");
+                }
+            });
             messenger.setReceiver(MainActivity.this);
             if (snack != null) snack.dismiss();
         } else {
@@ -142,24 +149,14 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
     @Override
     public void onUserInfoUpdated(boolean success, SocialUser user) {
         if (success) {
+            connectService();
             if (user.getType() == SocialManager.Types.TYPE_VK) {
 
                 ((TextView) findViewById(R.id.vk_text)).setText(user.toString());
-
-                FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-                fab.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if (!messenger.connected())
-                            notifyUser(R.string.service_NA);
-                            //Starting queue
-                        else notifyUser("Not implemented yet");
-                    }
-                });
             }
 
         } else {
-            notifyUser("User info get failed");
+            notifyUser("User info get failed"); //TODO: Normal info w/ errors
         }
     }
 

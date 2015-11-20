@@ -165,7 +165,7 @@ public class SocialManager {
 
                 conn = (HttpsURLConnection) url.openConnection();
                 in = conn.getInputStream();
-                return wrapper.parseUserData(in); //TODO: Parsing exceptions
+                return wrapper.parseUserData(in); //TODO: Parsing exceptions (mainly, old token)
             } catch (IOException e) {
                 Log.e(LOG_TAG, "getting info error: " + e.getMessage());
             } finally {

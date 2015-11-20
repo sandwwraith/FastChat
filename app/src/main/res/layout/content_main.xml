@@ -58,7 +58,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:text="Not logged in(VK)"
+                    android:text="@string/loading"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
             </FrameLayout>
 
@@ -71,7 +71,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:text="Not logged in(FB)"
+                    android:text="Not implemented"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
             </FrameLayout>
         </TableRow>
