@@ -17,7 +17,7 @@ import java.net.Socket;
 
 public class MessengerService extends Service {
 
-    public static final String LOG_TAG = "Main_Tag";
+    public static final String LOG_TAG = "msg_service";
     public static final String ADDRESS = "192.168.2.18";
     public static final int TIMEOUT = 5000; //in ms
 
@@ -27,7 +27,8 @@ public class MessengerService extends Service {
     private final MessengerBinder binder = new MessengerBinder();
     private Socket sock = null;
     private boolean socketAvailable = false;
-    private ServerInteract callback = null;
+    private connectResultHandler connectCallback = null;
+    private messageHandler messageCallback = null;
     private ReceiveTask receiveTask = null;
 
     @Override
@@ -50,8 +51,8 @@ public class MessengerService extends Service {
      *
      * @param callback Вызывается onConnectResult при завершении
      */
-    public void connect(ServerInteract callback) {
-        this.callback = callback;
+    public void connect(connectResultHandler callback) {
+        this.connectCallback = callback;
         new ConnectionTask().execute();
     }
 
@@ -65,7 +66,7 @@ public class MessengerService extends Service {
      * @param msg Текст сообщения
      * @throws IllegalStateException Если сокет не соединён
      */
-    public void send(String msg) throws IllegalStateException {
+    public void send(byte[] msg) throws IllegalStateException {
         if (!connected()) throw new IllegalStateException("Not connected");
         new Thread(new DataSender(msg)).start();
     }
@@ -76,9 +77,10 @@ public class MessengerService extends Service {
      * @param callback Функиция, которая будет вызвана при получении сообщения
      * @throws IllegalStateException Если сокет не соединён
      */
-    public void setReceiver(ServerInteract callback) throws IllegalStateException {
+    public void setReceiver(messageHandler callback) throws IllegalStateException {
         if (!connected()) throw new IllegalStateException("Not connected");
-        this.callback = callback;
+        if (receiveTask != null) receiveTask.cancel(false);
+        this.messageCallback = callback;
         receiveTask = new ReceiveTask();
         receiveTask.execute();
     }
@@ -91,17 +93,19 @@ public class MessengerService extends Service {
      */
     public void close() throws IOException {
         if (!connected()) return;
-        send("\u0003"); //Ctrl+C
+        //send(new byte); //Ctrl+C
         if (receiveTask != null)
             receiveTask.cancel(false);
         if (sock != null)
             sock.close();
     }
 
-    public interface ServerInteract {
-        void processMessage(String msg);
-
+    public interface connectResultHandler {
         void onConnectResult(boolean success);
+    }
+
+    public interface messageHandler {
+        void processMessage(byte[] bytes);
     }
 
     public class MessengerBinder extends Binder {
@@ -117,7 +121,7 @@ public class MessengerService extends Service {
         @Override
         protected void onPostExecute(Boolean aBoolean) {
             socketAvailable = aBoolean;
-            callback.onConnectResult(aBoolean);
+            connectCallback.onConnectResult(aBoolean);
         }
 
         @Override
@@ -157,10 +161,10 @@ public class MessengerService extends Service {
      * Запускает один поток для отправки сообщения на сервер, закрывается
      */
     private class DataSender implements Runnable {
-        private final String message;
+        private final byte[] message;
 
-        public DataSender(String msg) {
-            this.message = msg + "\n";
+        public DataSender(byte[] msg) {
+            this.message = msg;
         }
 
         @Override
@@ -171,7 +175,7 @@ public class MessengerService extends Service {
                 Log.d(MessengerService.LOG_TAG, "Sending " + message);
                 out = sock.getOutputStream();
 
-                out.write(message.getBytes());
+                out.write(message);
                 out.flush();
             } catch (IOException e) {
                 Log.e(MessengerService.LOG_TAG, "Cannot send data: " + e.getMessage());
@@ -188,7 +192,7 @@ public class MessengerService extends Service {
      * Поток, который постоянно запущен и получает сообщения с сервера.
      * Вызывает callback в UI потоке.
      */
-    private class ReceiveTask extends AsyncTask<Void, String, Void> {
+    private class ReceiveTask extends AsyncTask<Void, byte[], Void> {
 
         @Override
         protected Void doInBackground(Void... params) {
@@ -204,7 +208,7 @@ public class MessengerService extends Service {
                         if (in.read(raw) == -1) throw new IOException("Unexpected end of stream");
                         String s = new String(raw);
                         Log.d(MessengerService.LOG_TAG, "Received: " + s);
-                        publishProgress(s);
+                        publishProgress(raw);
                     }
                 }
             } catch (IOException e) {
@@ -221,9 +225,9 @@ public class MessengerService extends Service {
         }
 
         @Override
-        protected void onProgressUpdate(String... values) {
-            if (MessengerService.this.callback != null)
-                MessengerService.this.callback.processMessage(values[0]);
+        protected void onProgressUpdate(byte[]... values) {
+            if (MessengerService.this.messageCallback != null)
+                MessengerService.this.messageCallback.processMessage(values[0]);
         }
     }
 

@@ -22,7 +22,7 @@ import com.sandwwraith.fastchat.social.SocialManager;
 import com.sandwwraith.fastchat.social.SocialUser;
 import com.sandwwraith.fastchat.social.SocialWrapper;
 
-public class MainActivity extends AppCompatActivity implements MessengerService.ServerInteract, SocialManager.SocialManagerCallback {
+public class MainActivity extends AppCompatActivity implements MessengerService.connectResultHandler, MessengerService.messageHandler, SocialManager.SocialManagerCallback {
 
     private SocialManager manager = null;
     private Snackbar snack = null;
@@ -115,8 +115,8 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
     }
 
     @Override
-    public void processMessage(String msg) {
-        messageView.append(msg);
+    public void processMessage(byte[] msg) {
+        messageView.append(new String(msg));
     }
 
     @Override
