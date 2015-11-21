@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import com.sandwwraith.fastchat.social.SocialManager;
 import com.sandwwraith.fastchat.social.SocialUser;
+import com.sandwwraith.fastchat.social.SocialWrapper;
 
 public class MainActivity extends AppCompatActivity implements MessengerService.ServerInteract, SocialManager.SocialManagerCallback {
 
@@ -147,16 +148,18 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
     }
 
     @Override
-    public void onUserInfoUpdated(boolean success, SocialUser user) {
-        if (success) {
-            connectService();
-            if (user.getType() == SocialManager.Types.TYPE_VK) {
+    public void onUserInfoFailed(SocialManager.Types type, SocialWrapper.ErrorStorage lastError) {
+        //Обработка различных ошибок. Пока что обрабатываем только устраревший токен
+        notifyUser(lastError.getErrorDescription());
+        this.onValidationFail(type);
+    }
 
-                ((TextView) findViewById(R.id.vk_text)).setText(user.toString());
-            }
+    @Override
+    public void onUserInfoUpdated(SocialUser user) {
+        connectService();
+        if (user.getType() == SocialManager.Types.TYPE_VK) {
 
-        } else {
-            notifyUser("User info get failed"); //TODO: Normal info w/ errors
+            ((TextView) findViewById(R.id.vk_text)).setText(user.toString());
         }
     }
 

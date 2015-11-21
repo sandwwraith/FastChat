@@ -54,12 +54,19 @@ public class SocialManager {
         void onValidationFail(Types type);
 
         /**
-         * Вызывается после запроса данных пользователя
+         * Вызывается после успешного запроса данных пользователя
          *
-         * @param success Успешен ли запрос
-         * @param user    Данные о пользователе, если первое поле true; иначе null
+         * @param user Данные о пользователе
          */
-        void onUserInfoUpdated(boolean success, SocialUser user);
+        void onUserInfoUpdated(SocialUser user);
+
+        /**
+         * Вызывается после неуспешного запроса данных пользователя
+         *
+         * @param type      Тип соц.сети
+         * @param lastError Информация об ошибке
+         */
+        void onUserInfoFailed(Types type, SocialWrapper.ErrorStorage lastError);
     }
 
 
@@ -143,11 +150,17 @@ public class SocialManager {
      */
     private class UserInfoTask extends AsyncTask<String, Void, SocialUser> {
         Types type;
+        SocialWrapper.ErrorStorage lastError = null;
 
         @Override
         protected void onPostExecute(SocialUser socialUser) {
             SocialManager.saveUser(type, socialUser);
-            callback.onUserInfoUpdated(socialUser != null, socialUser);
+            //callback.onUserInfoUpdated(socialUser != null, socialUser);
+            if (socialUser != null) {
+                callback.onUserInfoUpdated(socialUser);
+            } else {
+                callback.onUserInfoFailed(type, this.lastError);
+            }
         }
 
         @Override
@@ -165,7 +178,11 @@ public class SocialManager {
 
                 conn = (HttpsURLConnection) url.openConnection();
                 in = conn.getInputStream();
-                return wrapper.parseUserData(in); //TODO: Parsing exceptions (mainly, old token)
+                SocialUser user = wrapper.parseUserData(in);
+                if (user == null) {
+                    this.lastError = wrapper.getLastError();
+                }
+                return user;
             } catch (IOException e) {
                 Log.e(LOG_TAG, "getting info error: " + e.getMessage());
             } finally {

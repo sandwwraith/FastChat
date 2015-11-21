@@ -71,7 +71,27 @@ public class VkWrapper implements SocialWrapper {
             reader.beginObject();
             String resp = reader.nextName();
             if (!resp.equals("response")) {
-                //TODO: Normal error handling
+                //{"error":{"error_code":113,"error_msg":"Invalid user id","request_params":[{"key":"oauth","value":"1"},{"key":"method","value":"users.get"},{"key":"user_ids","value":"545770113325252"}]}}
+                reader.beginObject();
+                String err = "";
+                String errcode = "";
+                while (reader.hasNext()) {
+                    String nm = reader.nextName();
+                    switch (nm) {
+                        case "error_code":
+                            errcode = reader.nextString();
+                            break;
+                        case "error_msg":
+                            err = reader.nextString();
+                            break;
+                        default:
+                            reader.skipValue();
+                    }
+                }
+                reader.endObject();
+                Log.e(LOG_TAG, "Response error: " + err);
+
+                lastError = new ErrorStorage(errcode, err);
                 return null;
             }
             reader.beginArray();
@@ -92,6 +112,7 @@ public class VkWrapper implements SocialWrapper {
                         break;
                     case "sex":
                         sex = Integer.parseInt(reader.nextString());
+                        break;
                     default:
                         reader.skipValue();
                 }
@@ -106,5 +127,12 @@ public class VkWrapper implements SocialWrapper {
             Log.e(LOG_TAG, "Parser exception: " + e.getMessage());
         }
         return null;
+    }
+
+    private static ErrorStorage lastError = null;
+
+    @Override
+    public ErrorStorage getLastError() {
+        return lastError;
     }
 }
