@@ -82,7 +82,7 @@ public class MessageSerializer {
     public static byte[] serializeLeave() {
         byte[] b = new byte[2];
         b[0] = (byte) 42;
-        b[1] = MessageType.PIDOR;
+        b[1] = MessageType.LEAVE;
         return b;
     }
 }

@@ -11,7 +11,7 @@ public class MessageType {
     public static final byte VOTING = 4;
 
     public static final byte DISCONNECT = 10;
-    public static final byte PIDOR = 69;
+    public static final byte LEAVE = 69;
 
     public static final byte MSG_ERROR = 42;
     public static final byte FATAL_ERROR = 127;
