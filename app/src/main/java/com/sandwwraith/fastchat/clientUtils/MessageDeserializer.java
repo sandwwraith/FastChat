@@ -44,10 +44,11 @@ public class MessageDeserializer {
     public Pair<int[], String> deserializePairFound(byte[] raw) throws MessageDeserializerException {
         validateSeq(raw, MessageType.QUEUE, 4);
         try {
-            int gend = (raw[2] & 3); //000X00YY, where Y - gender, X - language
-            int len = raw[3];
-            String s = new String(raw, 4, len, Charset.forName("UTF-8"));
-            int theme = raw[4 + len];
+            int theme = raw[2];
+            int gend = (raw[3] & 3); //000X00YY, where Y - gender, X - language
+            int len = raw[4];
+            String s = new String(raw, 5, len, Charset.forName("UTF-8"));
+
 
             int[] res = new int[2];
             res[0] = theme;

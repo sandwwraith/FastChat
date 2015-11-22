@@ -18,6 +18,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.sandwwraith.fastchat.clientUtils.MessageDeserializer;
+import com.sandwwraith.fastchat.clientUtils.MessageSerializer;
+import com.sandwwraith.fastchat.clientUtils.Pair;
 import com.sandwwraith.fastchat.social.SocialManager;
 import com.sandwwraith.fastchat.social.SocialUser;
 import com.sandwwraith.fastchat.social.SocialWrapper;
@@ -116,7 +119,14 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
 
     @Override
     public void processMessage(byte[] msg) {
-        messageView.append(new String(msg));
+        //messageView.append(new String(msg));
+        try {
+            MessageDeserializer d = new MessageDeserializer();
+            Pair<int[], String> p = d.deserializePairFound(msg);
+            notifyUser("Pair found " + p.second + " theme " + p.first[0]);
+        } catch (MessageDeserializer.MessageDeserializerException e) {
+            Log.e("main_activity", e.getMessage());
+        }
     }
 
     @Override
@@ -132,12 +142,16 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
     @Override
     public void onConnectResult(boolean success) {
         if (success) {
-            FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+            final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     //Starting queue
-                    notifyUser("Not implemented yet");
+                    SocialUser user = SocialManager.getUser(SocialManager.Types.TYPE_VK);
+                    Log.d("main_activity", "Queuing user: " + user.toString());
+                    messenger.send(MessageSerializer.queueUser(user));
+                    fab.setClickable(false); //Queuing only one time
+                    //notifyUser("Not implemented yet");
                 }
             });
             messenger.setReceiver(MainActivity.this);
