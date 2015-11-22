@@ -33,13 +33,27 @@ public class MessageDeserializer {
                     , Byte.toString(type), Byte.toString(raw[1]));
     }
 
-    public Pair<Integer, String> deserializePairFound(byte[] raw) throws MessageDeserializerException {
+    /**
+     * Deserialize message from server about found opponent. Returns array of two elements and string.
+     * First element of array - theme, second element - gender. String contains name
+     *
+     * @param raw Raw bytes got from server
+     * @return Pair(int[], string) as described above
+     * @throws MessageDeserializerException
+     */
+    public Pair<int[], String> deserializePairFound(byte[] raw) throws MessageDeserializerException {
         validateSeq(raw, MessageType.QUEUE, 4);
         try {
             int gend = (raw[2] & 3); //000X00YY, where Y - gender, X - language
             int len = raw[3];
             String s = new String(raw, 4, len, Charset.forName("UTF-8"));
-            return new Pair<>(gend, s);
+            int theme = raw[4 + len];
+
+            int[] res = new int[2];
+            res[0] = theme;
+            res[1] = gend;
+
+            return new Pair<>(res, s);
         } catch (IndexOutOfBoundsException e) {
             throw new MessageDeserializerException("Unexpected end of sequence");
         }

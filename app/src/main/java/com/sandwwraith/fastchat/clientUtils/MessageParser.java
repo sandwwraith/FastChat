@@ -10,7 +10,7 @@ import java.util.Date;
  */
 public class MessageParser {
     public interface MessageResult {
-        void onPairFound(Pair<Integer, String> companion);
+        void onPairFound(Pair<int[], String> companion);
 
         void onTextMessageReceived(Pair<Date, String> message);
 

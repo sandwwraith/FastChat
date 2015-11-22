@@ -15,7 +15,7 @@ public class MessageSerializer {
 
     public static byte[] queueUser(SocialUser user) {
         byte[] raw = user.getFirstName().getBytes(Charset.forName("UTF-8"));
-        ByteBuffer buf = ByteBuffer.allocate(4 + raw.length);
+        ByteBuffer buf = ByteBuffer.allocate(4 + raw.length + 1);
         buf.put((byte) 42);
         buf.put(MessageType.QUEUE);
         byte magic = (byte) ((user.getType() == SocialManager.Types.TYPE_VK) ? 0 : 1);
@@ -24,6 +24,7 @@ public class MessageSerializer {
         buf.put(magic);
         buf.put((byte) raw.length);
         buf.put(raw);
+        buf.put((byte) 42); //Place for theme
         return buf.array();
     }
 
