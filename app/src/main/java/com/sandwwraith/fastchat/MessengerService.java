@@ -14,6 +14,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.Arrays;
 
 public class MessengerService extends Service {
 
@@ -63,7 +64,7 @@ public class MessengerService extends Service {
     /**
      * Посылает сообщение на сервер
      *
-     * @param msg Текст сообщения
+     * @param msg Байты сообщения
      * @throws IllegalStateException Если сокет не соединён
      */
     public void send(byte[] msg) throws IllegalStateException {
@@ -93,7 +94,7 @@ public class MessengerService extends Service {
      */
     public void close() throws IOException {
         if (!connected()) return;
-        //send(new byte); //Ctrl+C
+        send(new byte[]{3}); //Ctrl+C
         if (receiveTask != null)
             receiveTask.cancel(false);
         if (sock != null)
@@ -136,6 +137,7 @@ public class MessengerService extends Service {
                 Log.e(MessengerService.LOG_TAG, "Can't open socket: " + e.getMessage());
                 return false;
             }
+
             try {
                 //Приём сообщения, сразу посылаемого сервером новым клиентам
                 in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
@@ -172,7 +174,7 @@ public class MessengerService extends Service {
 
             OutputStream out = null;
             try {
-                Log.d(MessengerService.LOG_TAG, "Sending " + message);
+                Log.d(MessengerService.LOG_TAG, "Sending " + Arrays.toString(message));
                 out = sock.getOutputStream();
 
                 out.write(message);
@@ -214,8 +216,6 @@ public class MessengerService extends Service {
             } catch (IOException e) {
                 Log.e(MessengerService.LOG_TAG, e.getMessage());
                 try {
-                    //TODO: Привести секцию в более красивое состояние
-                    Log.wtf(MessengerService.LOG_TAG, "Why i am closing?");
                     if (in != null) in.close();
                 } catch (Exception w) {
                     Log.wtf(MessengerService.LOG_TAG, "Cannot close: " + w.getMessage());
