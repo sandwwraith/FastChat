@@ -88,7 +88,7 @@ public class MessengerService extends Service {
 
     /**
      * Обрывает приём данных и закрывает сокет
-     * TODO: Дождаться всех запущенных тредов. Или сделать как forceclose() ?
+     * TODO: Normal closing
      *
      * @throws IOException Если что-то пошло не так.
      */

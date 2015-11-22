@@ -8,4 +8,5 @@
     <string name="greetings">Greetings, traveller!</string>
     <string name="network_NA">Network not available</string>
     <string name="service_NA">Sorry, service is temporarily unavailable</string>
+    <string name="search_pair">Searching opponent…</string>
 </resources>

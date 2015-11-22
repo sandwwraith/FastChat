@@ -27,6 +27,8 @@ import com.sandwwraith.fastchat.social.SocialWrapper;
 
 public class MainActivity extends AppCompatActivity implements MessengerService.connectResultHandler, MessengerService.messageHandler, SocialManager.SocialManagerCallback {
 
+    private final static String LOG_TAG = "main_activity";
+
     private SocialManager manager = null;
     private Snackbar snack = null;
 
@@ -123,9 +125,11 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
         try {
             MessageDeserializer d = new MessageDeserializer();
             Pair<int[], String> p = d.deserializePairFound(msg);
+
             notifyUser("Pair found " + p.second + " theme " + p.first[0]);
+            if (snack != null) snack.dismiss();
         } catch (MessageDeserializer.MessageDeserializerException e) {
-            Log.e("main_activity", e.getMessage());
+            Log.e(LOG_TAG, e.getMessage());
         }
     }
 
@@ -148,8 +152,11 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
                 public void onClick(View view) {
                     //Starting queue
                     SocialUser user = SocialManager.getUser(SocialManager.Types.TYPE_VK);
-                    Log.d("main_activity", "Queuing user: " + user.toString());
+                    Log.d(LOG_TAG, "Queuing user: " + user.toString());
                     messenger.send(MessageSerializer.queueUser(user));
+                    snack = Snackbar.make(messageView, R.string.search_pair, Snackbar.LENGTH_INDEFINITE)
+                            .setAction("Action", null);
+                    snack.show();
                     fab.setClickable(false); //Queuing only one time
                     //notifyUser("Not implemented yet");
                 }
