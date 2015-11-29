@@ -2,13 +2,16 @@ package com.sandwwraith.fastchat.clientUtils;
 
 import android.support.annotation.Nullable;
 
+import com.sandwwraith.fastchat.MessengerService;
+
 import java.util.Date;
 
 /**
  * Created by sandwwraith(@gmail.com)
  * ITMO University, 2015.
  */
-public class MessageParser {
+public class MessageParser implements MessengerService.messageHandler {
+
     public interface MessageResult {
         void onPairFound(Pair<int[], String> companion);
 
@@ -63,5 +66,10 @@ public class MessageParser {
         } catch (MessageDeserializer.MessageDeserializerException e) {
             callBack.onMalformedSequence(e.getMessage());
         }
+    }
+
+    @Override
+    public void processMessage(byte[] bytes) {
+        parse(bytes);
     }
 }

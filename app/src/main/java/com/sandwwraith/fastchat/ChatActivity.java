@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,19 +17,24 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.sandwwraith.fastchat.clientUtils.MessageParser;
+import com.sandwwraith.fastchat.clientUtils.MessageSerializer;
 import com.sandwwraith.fastchat.clientUtils.Pair;
 
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Random;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class ChatActivity extends AppCompatActivity {
+public class ChatActivity extends AppCompatActivity implements MessageParser.MessageResult {
 
     public static final String NAME_INTENT = "NAME_INTENT";
     public static final String GENDER_INTENT = "GENDER_INTENT";
@@ -36,6 +42,8 @@ public class ChatActivity extends AppCompatActivity {
 
     private MenuItem timer;
     private RecyclerAdapter adapter;
+    private EditText editText;
+    RecyclerView recyclerView;
 
     private ArrayList<MessageHolder> messages = new ArrayList<>();
 
@@ -50,7 +58,7 @@ public class ChatActivity extends AppCompatActivity {
             MessengerService.MessengerBinder binder = (MessengerService.MessengerBinder) service;
             ChatActivity.this.messenger = binder.getService();
 
-            //messenger.setReceiver(...);
+            messenger.setReceiver(new MessageParser(ChatActivity.this));
             Timer mTimer = new Timer();
             mTimer.schedule(new TimerTick(), 1000, 1000);
         }
@@ -81,16 +89,28 @@ public class ChatActivity extends AppCompatActivity {
         getSupportActionBar().setTitle(name);
         getSupportActionBar().setSubtitle(theme);
 
+        editText = (EditText) findViewById(R.id.msg_text);
+        findViewById(R.id.send_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String msg = editText.getText().toString();
+                messages.add(new MessageHolder(msg));
+                messenger.send(MessageSerializer.serializeMessage(msg));
+                adapter.notifyDataSetChanged();
+                recyclerView.smoothScrollToPosition(adapter.getItemCount());
+            }
+        });
+
         //-----TESTING----
-        Random r = new Random();
-        for (int i = 0; i < 42; i++) {
+        /*Random r = new Random();
+        for (int i = 0; i < 3; i++) {
             messages.add(new MessageHolder(new Pair<>(new Date(), "Test" + r.nextFloat())
                     , r.nextBoolean() ? MessageHolder.M_SEND : MessageHolder.M_RECV
             ));
-        }
+        }*/
         //-----TESTING----
 
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler);
+        recyclerView = (RecyclerView) findViewById(R.id.recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new RecyclerAdapter();
         recyclerView.setAdapter(adapter);
@@ -122,6 +142,47 @@ public class ChatActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    //------Message handling section
+    @Override
+    public void onPairFound(Pair<int[], String> companion) {
+        // No action on this screen
+    }
+
+    @Override
+    public void onTextMessageReceived(Pair<Date, String> message) {
+        messages.add(new MessageHolder(message, MessageHolder.M_RECV));
+        adapter.notifyDataSetChanged();
+        recyclerView.smoothScrollToPosition(adapter.getItemCount());
+    }
+
+    @Override
+    public void onTimeout() {
+        //TODO: Timeout handle
+    }
+
+    @Override
+    public void onVotingResults(Pair<String, String> voted) {
+        //No action on this screen
+    }
+
+    @Override
+    public void onLeave() {
+
+    }
+
+    @Override
+    public void onServerError() {
+
+    }
+
+    @Override
+    public void onMalformedSequence(@Nullable String errorDescription) {
+        Toast.makeText(getApplicationContext(), errorDescription == null ? "Malformed sequence" : errorDescription, Toast.LENGTH_LONG)
+                .show();
+    }
+
+    //------Message handling section end
 
     private class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder> {
 
@@ -180,8 +241,15 @@ public class ChatActivity extends AppCompatActivity {
             this.msg = msg.second;
         }
 
+        MessageHolder(String msg) {//Use this to create a sent message
+            this.time = new Date();
+            this.type = M_SEND;
+            this.msg = msg;
+        }
+
         public String getFormattedDate() {
-            return time.toString(); //TODO: Format beautiful
+            SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+            return df.format(time);
         }
 
         public String getMessage() {
