@@ -40,7 +40,7 @@ public class ChatActivity extends AppCompatActivity implements MessageParser.Mes
     public static final String GENDER_INTENT = "GENDER_INTENT";
     public static final String THEME_INTENT = "THEME_INTENT";
 
-    private MenuItem timer;
+    private MenuItem timerView;
     private RecyclerAdapter adapter;
     private EditText editText;
     RecyclerView recyclerView;
@@ -48,6 +48,7 @@ public class ChatActivity extends AppCompatActivity implements MessageParser.Mes
     private ArrayList<MessageHolder> messages = new ArrayList<>();
 
     private int seconds = 5 * 60;
+
     //Connection to service
     //Refer to documentation, "Bound service"
     //or to lesson #5
@@ -94,21 +95,14 @@ public class ChatActivity extends AppCompatActivity implements MessageParser.Mes
             @Override
             public void onClick(View v) {
                 String msg = editText.getText().toString();
+                if (msg.trim().equals("")) return;
                 messages.add(new MessageHolder(msg));
                 messenger.send(MessageSerializer.serializeMessage(msg));
+                editText.setText("");
                 adapter.notifyDataSetChanged();
                 recyclerView.smoothScrollToPosition(adapter.getItemCount());
             }
         });
-
-        //-----TESTING----
-        /*Random r = new Random();
-        for (int i = 0; i < 3; i++) {
-            messages.add(new MessageHolder(new Pair<>(new Date(), "Test" + r.nextFloat())
-                    , r.nextBoolean() ? MessageHolder.M_SEND : MessageHolder.M_RECV
-            ));
-        }*/
-        //-----TESTING----
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -122,9 +116,9 @@ public class ChatActivity extends AppCompatActivity implements MessageParser.Mes
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_chat, menu);
-        timer = menu.findItem(R.id.chat_timer);
-        timer.setEnabled(false);
-        timer.setTitle("5:00");
+        timerView = menu.findItem(R.id.chat_timer);
+        timerView.setEnabled(false);
+        timerView.setTitle("5:00");
         return true;
     }
 
@@ -199,8 +193,13 @@ public class ChatActivity extends AppCompatActivity implements MessageParser.Mes
             holder.message.setText(h.getMessage());
             holder.timeStamp.setText(h.getFormattedDate());
 
-            if (h.getType() == MessageHolder.M_SEND) holder.layout.setGravity(Gravity.RIGHT);
-            else holder.layout.setGravity(Gravity.LEFT);
+            if (h.getType() == MessageHolder.M_SEND) {
+                holder.message.setGravity(Gravity.RIGHT);
+                holder.layout.setGravity(Gravity.RIGHT);
+            } else {
+                holder.message.setGravity(Gravity.LEFT);
+                holder.layout.setGravity(Gravity.LEFT);
+            }
         }
 
         @Override
@@ -235,12 +234,25 @@ public class ChatActivity extends AppCompatActivity implements MessageParser.Mes
             return type;
         }
 
+        /**
+         * Создаёт новый элемент сообщения из пары и типа.
+         * Лучше использовать для создания из принятого сообщения
+         *
+         * @param msg  Пара принятого сообщения
+         * @param type Тип, см. константы класса
+         */
         MessageHolder(Pair<Date, String> msg, int type) {
             this.type = type;
             this.time = msg.first;
             this.msg = msg.second;
         }
 
+        /**
+         * Создаёт сообщение из строки, выставляя дату как текущую, а тип сообщения - как посланное
+         * Удобно для хранения только что посланных сообщений
+         *
+         * @param msg Текст сообщения
+         */
         MessageHolder(String msg) {//Use this to create a sent message
             this.time = new Date();
             this.type = M_SEND;
@@ -266,7 +278,7 @@ public class ChatActivity extends AppCompatActivity implements MessageParser.Mes
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    timer.setTitle(s);
+                    timerView.setTitle(s);
                 }
             });
         }

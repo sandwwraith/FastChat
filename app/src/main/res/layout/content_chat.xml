@@ -23,7 +23,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="5"
             android:hint="@string/messagefield_hint"
-            android:id="@+id/msg_text" />
+            android:id="@+id/msg_text"
+            android:inputType="textCapSentences|textShortMessage|textAutoCorrect|text" />
 
         <ImageButton
             android:layout_width="0dp"
