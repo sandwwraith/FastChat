@@ -19,7 +19,7 @@ import java.util.Arrays;
 public class MessengerService extends Service {
 
     public static final String LOG_TAG = "msg_service";
-    public static final String ADDRESS = "192.168.2.18";
+    public static final String ADDRESS = "10.10.10.18";
     public static final int TIMEOUT = 5000; //in ms
 
     //Connection to service

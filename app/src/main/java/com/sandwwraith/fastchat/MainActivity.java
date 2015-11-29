@@ -125,8 +125,15 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
         try {
             Pair<int[], String> p = MessageDeserializer.deserializePairFound(msg);
 
-            notifyUser("Pair found " + p.second + " theme " + p.first[0]);
             if (snack != null) snack.dismiss();
+
+            Log.d(LOG_TAG, "Pair found " + p.second + " theme " + p.first[0]);
+            Intent intent = new Intent(this, ChatActivity.class);
+            intent.putExtra(ChatActivity.NAME_INTENT, p.second);
+            intent.putExtra(ChatActivity.THEME_INTENT, p.first[0]);
+            intent.putExtra(ChatActivity.GENDER_INTENT, p.first[1]);
+            startActivity(intent);
+
         } catch (MessageDeserializer.MessageDeserializerException e) {
             Log.e(LOG_TAG, e.getMessage());
         }
