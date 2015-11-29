@@ -1,7 +1,11 @@
 package com.sandwwraith.fastchat;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,9 +21,12 @@ import android.widget.TextView;
 
 import com.sandwwraith.fastchat.clientUtils.Pair;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class ChatActivity extends AppCompatActivity {
 
@@ -31,6 +38,33 @@ public class ChatActivity extends AppCompatActivity {
     private RecyclerAdapter adapter;
 
     private ArrayList<MessageHolder> messages = new ArrayList<>();
+
+    private int seconds = 5 * 60;
+    //Connection to service
+    //Refer to documentation, "Bound service"
+    //or to lesson #5
+    private MessengerService messenger = null;
+    private ServiceConnection connection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            MessengerService.MessengerBinder binder = (MessengerService.MessengerBinder) service;
+            ChatActivity.this.messenger = binder.getService();
+
+            //messenger.setReceiver(...);
+            Timer mTimer = new Timer();
+            mTimer.schedule(new TimerTick(), 1000, 1000);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+        }
+    };
+
+    private void connectService() {
+        Intent intent = new Intent(this, MessengerService.class);
+        bindService(intent, connection, Context.BIND_AUTO_CREATE);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +94,8 @@ public class ChatActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new RecyclerAdapter();
         recyclerView.setAdapter(adapter);
+
+        connectService();
     }
 
     @Override
@@ -68,7 +104,7 @@ public class ChatActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_chat, menu);
         timer = menu.findItem(R.id.chat_timer);
         timer.setEnabled(false);
-        timer.setTitle("05:00");
+        timer.setTitle("5:00");
         return true;
     }
 
@@ -150,6 +186,21 @@ public class ChatActivity extends AppCompatActivity {
 
         public String getMessage() {
             return msg;
+        }
+    }
+
+    private class TimerTick extends TimerTask {
+        @Override
+        public void run() {
+            seconds--;
+            final String s = Integer.toString(seconds / 60) + ":"
+                    + new DecimalFormat("00").format(seconds % 60);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    timer.setTitle(s);
+                }
+            });
         }
     }
 }
