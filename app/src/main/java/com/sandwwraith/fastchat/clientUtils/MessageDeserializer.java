@@ -23,7 +23,7 @@ public class MessageDeserializer {
         }
     }
 
-    private void validateSeq(byte[] raw, byte type, int requiredMinLength) throws MessageDeserializerException {
+    private static void validateSeq(byte[] raw, byte type, int requiredMinLength) throws MessageDeserializerException {
         if (raw.length < requiredMinLength)
             throw new MessageDeserializerException("Incorrect sequence length"
                     , Integer.toString(requiredMinLength), Integer.toString(raw.length));
@@ -41,7 +41,7 @@ public class MessageDeserializer {
      * @return Pair(int[], string) as described above
      * @throws MessageDeserializerException
      */
-    public Pair<int[], String> deserializePairFound(byte[] raw) throws MessageDeserializerException {
+    public static Pair<int[], String> deserializePairFound(byte[] raw) throws MessageDeserializerException {
         validateSeq(raw, MessageType.QUEUE, 4);
         try {
             int theme = raw[2];
@@ -60,7 +60,7 @@ public class MessageDeserializer {
         }
     }
 
-    public Pair<Date, String> deserializeMessage(byte[] raw) throws MessageDeserializerException {
+    public static Pair<Date, String> deserializeMessage(byte[] raw) throws MessageDeserializerException {
         validateSeq(raw, MessageType.MESSAGE, 14);
 
         try {
@@ -81,7 +81,7 @@ public class MessageDeserializer {
      * If voting unsuccessful, returns (null,null)
      * Returns (name, URL) if success.
      */
-    public Pair<String, String> deserializeVoting(byte[] raw) throws MessageDeserializerException {
+    public static Pair<String, String> deserializeVoting(byte[] raw) throws MessageDeserializerException {
         validateSeq(raw, MessageType.VOTING, 3);
         try {
             if (raw[2] == 0)

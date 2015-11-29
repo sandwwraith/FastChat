@@ -123,8 +123,7 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
     public void processMessage(byte[] msg) {
         //messageView.append(new String(msg));
         try {
-            MessageDeserializer d = new MessageDeserializer();
-            Pair<int[], String> p = d.deserializePairFound(msg);
+            Pair<int[], String> p = MessageDeserializer.deserializePairFound(msg);
 
             notifyUser("Pair found " + p.second + " theme " + p.first[0]);
             if (snack != null) snack.dismiss();

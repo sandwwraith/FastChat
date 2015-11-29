@@ -32,20 +32,19 @@ public class MessageParser {
     }
 
     public void parse(byte[] raw) {
-        MessageDeserializer d = new MessageDeserializer();
         try {
             if (raw.length < 2)
                 throw new MessageDeserializer.MessageDeserializerException("Not enough seq length to detect type");
 
             switch (raw[1]) {
                 case MessageType.QUEUE:
-                    callBack.onPairFound(d.deserializePairFound(raw));
+                    callBack.onPairFound(MessageDeserializer.deserializePairFound(raw));
                     break;
                 case MessageType.MESSAGE:
-                    callBack.onTextMessageReceived(d.deserializeMessage(raw));
+                    callBack.onTextMessageReceived(MessageDeserializer.deserializeMessage(raw));
                     break;
                 case MessageType.VOTING:
-                    callBack.onVotingResults(d.deserializeVoting(raw));
+                    callBack.onVotingResults(MessageDeserializer.deserializeVoting(raw));
                     break;
                 case MessageType.TIMEOUT:
                     callBack.onTimeout();
