@@ -113,6 +113,9 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+//            Intent intent = new Intent(this, ChatActivity.class);
+//            startActivity(intent);
+
             return true;
         }
 

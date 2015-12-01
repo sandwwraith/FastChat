@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -40,12 +41,17 @@ public class ChatActivity extends AppCompatActivity implements MessageParser.Mes
     public static final String GENDER_INTENT = "GENDER_INTENT";
     public static final String THEME_INTENT = "THEME_INTENT";
 
+    public static final String SECONDS_STATE = "CHAT_SECONDS";
+
+    public static final String LOG_TAG = "chat_activity";
+
     private MenuItem timerView;
     private RecyclerAdapter adapter;
     private EditText editText;
     RecyclerView recyclerView;
+    private TimerTick timer_task;
 
-    private ArrayList<MessageHolder> messages = new ArrayList<>();
+    private ArrayList<MessageHolder> messages = new ArrayList<>(); //TODO: Save messages
 
     private int seconds = 5 * 60;
 
@@ -61,7 +67,8 @@ public class ChatActivity extends AppCompatActivity implements MessageParser.Mes
 
             messenger.setReceiver(new MessageParser(ChatActivity.this));
             Timer mTimer = new Timer();
-            mTimer.schedule(new TimerTick(), 1000, 1000);
+            timer_task = new TimerTick();
+            mTimer.scheduleAtFixedRate(timer_task, 1000, 1000);
         }
 
         @Override
@@ -85,6 +92,13 @@ public class ChatActivity extends AppCompatActivity implements MessageParser.Mes
         Intent x = getIntent();
         String name = (x == null ? null : x.getStringExtra(NAME_INTENT));
         String theme = (x == null ? null : "Theme " + x.getIntExtra(THEME_INTENT, 42));
+
+        Log.d(LOG_TAG, x == null ? "Intent null" : "Intent not null");
+        Log.d(LOG_TAG, savedInstanceState == null ? "SavedState null" : "SavedState not null");
+
+        if (savedInstanceState != null) {
+            seconds = savedInstanceState.getInt(SECONDS_STATE);
+        }
 
         //noinspection ConstantConditions
         getSupportActionBar().setTitle(name);
@@ -118,7 +132,7 @@ public class ChatActivity extends AppCompatActivity implements MessageParser.Mes
         getMenuInflater().inflate(R.menu.menu_chat, menu);
         timerView = menu.findItem(R.id.chat_timer);
         timerView.setEnabled(false);
-        timerView.setTitle("5:00");
+        timerView.setTitle(formatSeconds());
         return true;
     }
 
@@ -137,6 +151,11 @@ public class ChatActivity extends AppCompatActivity implements MessageParser.Mes
         return super.onOptionsItemSelected(item);
     }
 
+    private void timedOutEvent() {
+        messenger.send(MessageSerializer.serializeTimeout());
+        this.onTimeout();
+    }
+
     //------Message handling section
     @Override
     public void onPairFound(Pair<int[], String> companion) {
@@ -153,6 +172,7 @@ public class ChatActivity extends AppCompatActivity implements MessageParser.Mes
     @Override
     public void onTimeout() {
         //TODO: Timeout handle
+        Toast.makeText(this, "TIMEOUT", Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -273,14 +293,41 @@ public class ChatActivity extends AppCompatActivity implements MessageParser.Mes
         @Override
         public void run() {
             seconds--;
-            final String s = Integer.toString(seconds / 60) + ":"
-                    + new DecimalFormat("00").format(seconds % 60);
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    timerView.setTitle(s);
-                }
-            });
+            if (seconds == 0) {
+                TimerTick.this.cancel();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ChatActivity.this.timedOutEvent();
+                    }
+                });
+            } else {
+                final String s = formatSeconds();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        timerView.setTitle(s);
+                    }
+                });
+            }
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putInt(SECONDS_STATE, seconds);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (timer_task != null) timer_task.cancel();
+        unbindService(connection);
+        super.onDestroy();
+    }
+
+    private String formatSeconds() {
+        return Integer.toString(seconds / 60) + ":"
+                + new DecimalFormat("00").format(seconds % 60);
     }
 }
