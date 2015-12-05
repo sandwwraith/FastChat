@@ -194,21 +194,6 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
         }
     }
 
-    public class AuthorizationClick implements View.OnClickListener {
-
-        @Override
-        public void onClick(View view) {
-            int id = view.getId();
-
-            if (id == R.id.fb_image) {
-                notifyUser("Sorry, facebook currently not implemented");
-            } else if (id == R.id.vk_image) {
-                Log.d(LOG_TAG, "Starting auth");
-                manager.startAuth(SocialManager.Types.TYPE_VK);
-            }
-        }
-    }
-
     public void notifyUser(String message) {
         Snackbar.make(messageView, message, Snackbar.LENGTH_SHORT)
                 .setAction("Action", null).show();
@@ -224,5 +209,25 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
                 (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         return netInfo != null && netInfo.isConnected();
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        Log.d(LOG_TAG, "New intent delivered!!!!111");
+    }
+
+    public class AuthorizationClick implements View.OnClickListener {
+
+        @Override
+        public void onClick(View view) {
+            int id = view.getId();
+
+            if (id == R.id.fb_image) {
+                notifyUser("Sorry, facebook currently not implemented");
+            } else if (id == R.id.vk_image) {
+                Log.d(LOG_TAG, "Starting auth");
+                manager.startAuth(SocialManager.Types.TYPE_VK);
+            }
+        }
     }
 }

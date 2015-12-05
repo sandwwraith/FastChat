@@ -24,27 +24,10 @@ import java.util.Date;
 public class VotingActivity extends AppCompatActivity implements MessageParser.MessageResult, View.OnClickListener {
 
     public final static String LOG_TAG = "vote_activity";
-
+    TextView textName;
     private int my_vote = -1;
     private int op_vote = -1;
     private Pair<String, String> op_result = null;
-
-    TextView textName;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_voting);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        String name = getIntent().getStringExtra(ChatActivity.NAME_INTENT);
-        textName = ((TextView) findViewById(R.id.text_name));
-        textName.setText(name);
-
-        connectService();
-    }
-
     private MessengerService messenger = null;
     private ServiceConnection connection = new ServiceConnection() {
         @Override
@@ -64,6 +47,20 @@ public class VotingActivity extends AppCompatActivity implements MessageParser.M
 
         }
     };
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_voting);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        String name = getIntent().getStringExtra(ChatActivity.NAME_INTENT);
+        textName = ((TextView) findViewById(R.id.text_name));
+        textName.setText(name);
+
+        connectService();
+    }
 
     private void connectService() {
         Intent intent = new Intent(this, MessengerService.class);
@@ -155,5 +152,22 @@ public class VotingActivity extends AppCompatActivity implements MessageParser.M
             Snackbar.make(textName, "Voting isn't successful", Snackbar.LENGTH_SHORT)
                     .setAction("Action", null).show(); //TODO: Proper notification
         }
+    }
+
+    /**
+     * Take care of popping the fragment back stack or finishing the activity
+     * as appropriate.
+     */
+    @Override
+    public void onBackPressed() {
+        Intent in = new Intent(getApplicationContext(), MainActivity.class);
+        in.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(in);
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (messenger != null) unbindService(connection);
+        super.onDestroy();
     }
 }
