@@ -82,8 +82,8 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
 
         //Checking connection
         if (!isOnline()) {
-            notifyUser(R.string.network_NA);
-            //TODO: Remove 'Loading...' label
+            ((TextView) findViewById(R.id.vk_text)).setText(R.string.network_NA);
+            ((TextView) findViewById(R.id.fb_text)).setText(R.string.network_NA);
         } else {
             manager = new SocialManager(this, this);
             manager.validateToken(SocialManager.Types.TYPE_VK);
@@ -157,6 +157,7 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
     public void onConnectResult(boolean success) {
         if (success) {
             final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+            fab.setVisibility(View.VISIBLE);
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -168,7 +169,6 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
                             .setAction("Action", null);
                     snack.show();
                     fab.setClickable(false); //Queuing only one time
-                    //notifyUser("Not implemented yet");
                 }
             });
             messenger.setReceiver(MainActivity.this);
@@ -203,7 +203,7 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
             if (id == R.id.fb_image) {
                 notifyUser("Sorry, facebook currently not implemented");
             } else if (id == R.id.vk_image) {
-                Log.d("Main_activity", "Starting auth");
+                Log.d(LOG_TAG, "Starting auth");
                 manager.startAuth(SocialManager.Types.TYPE_VK);
             }
         }

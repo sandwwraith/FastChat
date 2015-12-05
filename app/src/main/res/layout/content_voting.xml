@@ -49,7 +49,9 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text=""
         android:id="@+id/url_place"
+        android:autoLink="web"
         android:layout_above="@+id/button_like"
+        android:layout_marginBottom="@dimen/small_spacing"
         android:layout_centerHorizontal="true" />
 
     <TextView
@@ -59,5 +61,6 @@
         android:text=""
         android:id="@+id/text_name"
         android:layout_above="@+id/url_place"
+        android:layout_marginBottom="@dimen/small_spacing"
         android:layout_centerHorizontal="true" />
 </RelativeLayout>

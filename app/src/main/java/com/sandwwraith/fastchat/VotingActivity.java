@@ -136,6 +136,7 @@ public class VotingActivity extends AppCompatActivity implements MessageParser.M
                 v.setBackgroundColor(getResources().getColor(R.color.vote_Dislike));
                 break;
         }
+        //TODO: After changing color buttons lost their rounded corners. Bring it back
 
         findViewById(R.id.button_like).setClickable(false);
         findViewById(R.id.button_dislike).setClickable(false);
@@ -150,12 +151,6 @@ public class VotingActivity extends AppCompatActivity implements MessageParser.M
             textName.setText(op_result.first);
             TextView url = ((TextView) findViewById(R.id.url_place));
             url.setText(op_result.second);
-            url.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //TODO: Implement opening browser
-                }
-            });
         } else {
             Snackbar.make(textName, "Voting isn't successful", Snackbar.LENGTH_SHORT)
                     .setAction("Action", null).show(); //TODO: Proper notification

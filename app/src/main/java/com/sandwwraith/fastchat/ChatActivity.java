@@ -165,8 +165,8 @@ public class ChatActivity extends AppCompatActivity implements MessageParser.Mes
      */
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        //TODO: Send LEAVE message, when server would be ready to it.
+//        super.onBackPressed();
+        //TODO: back press
     }
 
     private void timedOutEvent() {
@@ -189,7 +189,7 @@ public class ChatActivity extends AppCompatActivity implements MessageParser.Mes
 
     @Override
     public void onTimeout() {
-        Toast.makeText(this, "TIMEOUT", Toast.LENGTH_LONG).show(); //TODO: Normal message
+        Toast.makeText(this, R.string.timeout_msg, Toast.LENGTH_SHORT).show();
 
         timer_task.cancel();
         Intent intent = new Intent(this, VotingActivity.class);

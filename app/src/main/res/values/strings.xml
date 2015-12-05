@@ -13,4 +13,5 @@
     <string name="text_like">Like</string>
     <string name="text_dislike">Dislike</string>
     <string name="voting_greet">Did you like your opponent?</string>
+    <string name="timeout_msg">Time out!</string>
 </resources>
