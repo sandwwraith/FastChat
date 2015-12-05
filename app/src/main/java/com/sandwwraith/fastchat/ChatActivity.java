@@ -23,19 +23,19 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.sandwwraith.fastchat.chatUtils.LeaveDialogFragment;
+import com.sandwwraith.fastchat.chatUtils.MessageHolder;
 import com.sandwwraith.fastchat.clientUtils.MessageParser;
 import com.sandwwraith.fastchat.clientUtils.MessageSerializer;
 import com.sandwwraith.fastchat.clientUtils.Pair;
 
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class ChatActivity extends AppCompatActivity implements MessageParser.MessageResult {
+public class ChatActivity extends AppCompatActivity implements MessageParser.MessageResult, LeaveDialogFragment.LeaveDialogFragmentListener {
 
     public static final String NAME_INTENT = "NAME_INTENT";
     public static final String GENDER_INTENT = "GENDER_INTENT";
@@ -44,11 +44,10 @@ public class ChatActivity extends AppCompatActivity implements MessageParser.Mes
     public static final String SECONDS_STATE = "CHAT_SECONDS";
 
     public static final String LOG_TAG = "chat_activity";
-
+    RecyclerView recyclerView;
     private MenuItem timerView;
     private RecyclerAdapter adapter;
     private EditText editText;
-    RecyclerView recyclerView;
     private TimerTick timer_task;
 
     private ArrayList<MessageHolder> messages = new ArrayList<>(); //TODO: Save messages... or just prohibit rotation ???
@@ -165,8 +164,14 @@ public class ChatActivity extends AppCompatActivity implements MessageParser.Mes
      */
     @Override
     public void onBackPressed() {
-//        super.onBackPressed();
-        //TODO: back press
+        LeaveDialogFragment lf = new LeaveDialogFragment();
+        lf.show(getFragmentManager(), "leave");
+    }
+
+    @Override
+    public void onLeaveConfirm() {
+        //TODO: send Leave message
+        super.onBackPressed();
     }
 
     private void timedOutEvent() {
@@ -220,6 +225,24 @@ public class ChatActivity extends AppCompatActivity implements MessageParser.Mes
 
     //------Message handling section end
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putInt(SECONDS_STATE, seconds);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (timer_task != null) timer_task.cancel();
+        if (messenger != null) unbindService(connection);
+        super.onDestroy();
+    }
+
+    private String formatSeconds() {
+        return Integer.toString(seconds / 60) + ":"
+                + new DecimalFormat("00").format(seconds % 60);
+    }
+
     private class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder> {
 
         @Override
@@ -264,53 +287,6 @@ public class ChatActivity extends AppCompatActivity implements MessageParser.Mes
         }
     }
 
-    private class MessageHolder {
-        public static final int M_SEND = 0x1;
-        public static final int M_RECV = 0x2;
-
-        private final int type; // Indicates if this message was "my" (sent to server) or from my opponent
-        private final Date time;
-        private final String msg;
-
-        public int getType() {
-            return type;
-        }
-
-        /**
-         * Создаёт новый элемент сообщения из пары и типа.
-         * Лучше использовать для создания из принятого сообщения
-         *
-         * @param msg  Пара принятого сообщения
-         * @param type Тип, см. константы класса
-         */
-        MessageHolder(Pair<Date, String> msg, int type) {
-            this.type = type;
-            this.time = msg.first;
-            this.msg = msg.second;
-        }
-
-        /**
-         * Создаёт сообщение из строки, выставляя дату как текущую, а тип сообщения - как посланное
-         * Удобно для хранения только что посланных сообщений
-         *
-         * @param msg Текст сообщения
-         */
-        MessageHolder(String msg) {//Use this to create a sent message
-            this.time = new Date();
-            this.type = M_SEND;
-            this.msg = msg;
-        }
-
-        public String getFormattedDate() {
-            SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
-            return df.format(time);
-        }
-
-        public String getMessage() {
-            return msg;
-        }
-    }
-
     private class TimerTick extends TimerTask {
         @Override
         public void run() {
@@ -333,23 +309,5 @@ public class ChatActivity extends AppCompatActivity implements MessageParser.Mes
                 });
             }
         }
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        outState.putInt(SECONDS_STATE, seconds);
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    protected void onDestroy() {
-        if (timer_task != null) timer_task.cancel();
-        if (messenger != null) unbindService(connection);
-        super.onDestroy();
-    }
-
-    private String formatSeconds() {
-        return Integer.toString(seconds / 60) + ":"
-                + new DecimalFormat("00").format(seconds % 60);
     }
 }
