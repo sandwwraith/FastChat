@@ -30,7 +30,7 @@ public class AuthActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onPageFinished(WebView view, String url) {
+            public void onPageFinished(WebView view, String url) { //TODO: Use another method
                 super.onPageFinished(view, url);
                 Log.d("auth_activity", "URL: " + url);
                 String tok = wrapper.retrieveToken(url);

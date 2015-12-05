@@ -13,54 +13,64 @@
     tools:showIn="@layout/activity_voting">
 
     <Button
+        android:id="@+id/button_like"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/text_like"
-        android:id="@+id/button_like"
-        android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_alignParentStart="true" />
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:text="@string/text_like" />
 
     <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/text_dislike"
         android:id="@+id/button_dislike"
-        android:layout_centerVertical="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_centerVertical="true"
         android:layout_marginEnd="@dimen/activity_horizontal_margin"
-        android:layout_alignParentEnd="true" />
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:text="@string/text_dislike" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="@string/voting_greet"
         android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:text="@string/voting_greet"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text=""
         android:id="@+id/url_place"
-        android:autoLink="web"
-        android:layout_above="@+id/button_like"
-        android:layout_marginBottom="@dimen/small_spacing"
-        android:layout_centerHorizontal="true" />
-
-    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text=""
-        android:id="@+id/text_name"
-        android:layout_above="@+id/url_place"
+        android:layout_above="@+id/button_like"
+        android:layout_centerHorizontal="true"
         android:layout_marginBottom="@dimen/small_spacing"
-        android:layout_centerHorizontal="true" />
+        android:autoLink="web"
+        android:text=""
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/text_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/url_place"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/small_spacing"
+        android:text=""
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <Button
+        android:id="@+id/try_again_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:text="@string/try_again"
+        android:visibility="invisible" />
 </RelativeLayout>

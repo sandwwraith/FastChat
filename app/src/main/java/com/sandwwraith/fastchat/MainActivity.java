@@ -209,7 +209,8 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
         Log.d(LOG_TAG, "New intent delivered");
         queueButton.setClickable(true);
         messenger.setReceiver(this);
-        //TODO: Make "Try again" button
+        boolean now = intent.getBooleanExtra(VotingActivity.ENQUEUE_NOW, false);
+        if (now) queueButton.callOnClick();
     }
 
     public class AuthorizationClick implements View.OnClickListener {

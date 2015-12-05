@@ -11,6 +11,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,6 +25,7 @@ import java.util.Date;
 public class VotingActivity extends AppCompatActivity implements MessageParser.MessageResult, View.OnClickListener {
 
     public final static String LOG_TAG = "vote_activity";
+    public static final String ENQUEUE_NOW = "ENQUEUE_NOW";
     TextView textName;
     private int my_vote = -1;
     private int op_vote = -1;
@@ -66,7 +68,6 @@ public class VotingActivity extends AppCompatActivity implements MessageParser.M
         Intent intent = new Intent(this, MessengerService.class);
         bindService(intent, connection, Context.BIND_AUTO_CREATE);
     }
-
 
     @Override
     public void onPairFound(Pair<int[], String> companion) {
@@ -152,6 +153,14 @@ public class VotingActivity extends AppCompatActivity implements MessageParser.M
             Snackbar.make(textName, "Voting isn't successful", Snackbar.LENGTH_SHORT)
                     .setAction("Action", null).show(); //TODO: Proper notification
         }
+        Button again = (Button) findViewById(R.id.try_again_button);
+        again.setVisibility(View.VISIBLE);
+        again.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                VotingActivity.this.returnToMain(true);
+            }
+        });
     }
 
     /**
@@ -159,8 +168,19 @@ public class VotingActivity extends AppCompatActivity implements MessageParser.M
      */
     @Override
     public void onBackPressed() {
+        this.returnToMain(false);
+    }
+
+    /**
+     * Method returns user to the main screen with proper back stack navigation
+     *
+     * @param enqueueNow Determines whether send request for enqueue user in chat
+     *                   immediately or not.
+     */
+    public void returnToMain(boolean enqueueNow) {
         Intent in = new Intent(getApplicationContext(), MainActivity.class);
         in.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        in.putExtra(ENQUEUE_NOW, enqueueNow);
         startActivity(in);
     }
 
