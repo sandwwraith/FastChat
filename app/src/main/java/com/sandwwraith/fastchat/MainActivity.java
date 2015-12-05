@@ -28,10 +28,9 @@ import com.sandwwraith.fastchat.social.SocialWrapper;
 public class MainActivity extends AppCompatActivity implements MessengerService.connectResultHandler, MessengerService.messageHandler, SocialManager.SocialManagerCallback {
 
     private final static String LOG_TAG = "main_activity";
-
+    FloatingActionButton queueButton;
     private SocialManager manager = null;
     private Snackbar snack = null;
-
     //Connection to service
     //Refer to documentation, "Bound service"
     //or to lesson #5
@@ -79,6 +78,7 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
         setSupportActionBar(toolbar);
 
         messageView = (TextView) findViewById(R.id.greetings);
+        queueButton = (FloatingActionButton) findViewById(R.id.fab);
 
         //Checking connection
         if (!isOnline()) {
@@ -125,7 +125,6 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
 
     @Override
     public void processMessage(byte[] msg) {
-        //messageView.append(new String(msg));
         try {
             Pair<int[], String> p = MessageDeserializer.deserializePairFound(msg);
 
@@ -156,21 +155,8 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
     @Override
     public void onConnectResult(boolean success) {
         if (success) {
-            final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-            fab.setVisibility(View.VISIBLE);
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    //Starting queue
-                    SocialUser user = SocialManager.getUser(SocialManager.Types.TYPE_VK);
-                    Log.d(LOG_TAG, "Queuing user: " + user.toString());
-                    messenger.send(MessageSerializer.queueUser(user));
-                    snack = Snackbar.make(messageView, R.string.search_pair, Snackbar.LENGTH_INDEFINITE)
-                            .setAction("Action", null);
-                    snack.show();
-                    fab.setClickable(false); //Queuing only one time
-                }
-            });
+            queueButton.setVisibility(View.VISIBLE);
+            queueButton.setOnClickListener(new EnqueueClick());
             messenger.setReceiver(MainActivity.this);
             if (snack != null) snack.dismiss();
         } else {
@@ -211,9 +197,19 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
         return netInfo != null && netInfo.isConnected();
     }
 
+    /**
+     * This method is called when new intent has been delivered to this screen
+     * That is, the voting has ended and the user returned to the main screen
+     * You can refer to {@code VotingActivity.onBackPressed()}
+     *
+     * @param intent Intent specifies, if user wants to be enqueued immediately
+     */
     @Override
     protected void onNewIntent(Intent intent) {
-        Log.d(LOG_TAG, "New intent delivered!!!!111");
+        Log.d(LOG_TAG, "New intent delivered");
+        queueButton.setClickable(true);
+        messenger.setReceiver(this);
+        //TODO: Make "Try again" button
     }
 
     public class AuthorizationClick implements View.OnClickListener {
@@ -228,6 +224,28 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
                 Log.d(LOG_TAG, "Starting auth");
                 manager.startAuth(SocialManager.Types.TYPE_VK);
             }
+        }
+    }
+
+    public class EnqueueClick implements View.OnClickListener {
+
+        /**
+         * Handles click from the view (actually, from floating button)
+         * and queues user to server.
+         * Then sets {@code clickable} to false to prevent double-enqueuing
+         *
+         * @param v View that has been clicked
+         */
+        @Override
+        public void onClick(View v) {
+            //Starting queue
+            SocialUser user = SocialManager.getUser(SocialManager.Types.TYPE_VK);
+            Log.d(LOG_TAG, "Queuing user: " + user.toString());
+            messenger.send(MessageSerializer.queueUser(user));
+            snack = Snackbar.make(messageView, R.string.search_pair, Snackbar.LENGTH_INDEFINITE)
+                    .setAction("Action", null);
+            snack.show();
+            v.setClickable(false); //Queuing only one time
         }
     }
 }

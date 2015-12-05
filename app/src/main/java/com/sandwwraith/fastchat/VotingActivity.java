@@ -155,8 +155,7 @@ public class VotingActivity extends AppCompatActivity implements MessageParser.M
     }
 
     /**
-     * Take care of popping the fragment back stack or finishing the activity
-     * as appropriate.
+     * Returns user to the main screen instead of inappropriate chat screen
      */
     @Override
     public void onBackPressed() {
