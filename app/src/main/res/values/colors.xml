@@ -3,5 +3,6 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FFC400</color>
-    <color name="votePick">#43a047</color>
+    <color name="vote_Like">#43a047</color>
+    <color name="vote_Dislike">#E53935</color>
 </resources>

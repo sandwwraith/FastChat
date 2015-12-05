@@ -54,6 +54,7 @@ public class ChatActivity extends AppCompatActivity implements MessageParser.Mes
     private ArrayList<MessageHolder> messages = new ArrayList<>(); //TODO: Save messages... or just prohibit rotation ???
 
     private int seconds = 5 * 60;
+    private String op_name = "";
 
     //Connection to service
     //Refer to documentation, "Bound service"
@@ -90,7 +91,7 @@ public class ChatActivity extends AppCompatActivity implements MessageParser.Mes
         setSupportActionBar(toolbar);
 
         Intent x = getIntent();
-        String name = (x == null ? null : x.getStringExtra(NAME_INTENT));
+        op_name = (x == null ? null : x.getStringExtra(NAME_INTENT));
         String theme = (x == null ? null : "Theme " + x.getIntExtra(THEME_INTENT, 42));
 
         Log.d(LOG_TAG, x == null ? "Intent null" : "Intent not null");
@@ -101,7 +102,7 @@ public class ChatActivity extends AppCompatActivity implements MessageParser.Mes
         }
 
         //noinspection ConstantConditions
-        getSupportActionBar().setTitle(name);
+        getSupportActionBar().setTitle(op_name);
         getSupportActionBar().setSubtitle(theme);
 
         editText = (EditText) findViewById(R.id.msg_text);
@@ -132,7 +133,7 @@ public class ChatActivity extends AppCompatActivity implements MessageParser.Mes
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_chat, menu);
         timerView = menu.findItem(R.id.chat_timer);
-        timerView.setEnabled(false);
+//        timerView.setEnabled(false);
         timerView.setTitle(formatSeconds());
         return true;
     }
@@ -146,6 +147,12 @@ public class ChatActivity extends AppCompatActivity implements MessageParser.Mes
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.chat_timer) {
+
+            //----DEBUGGING
+            timer_task.cancel();
+            this.timedOutEvent();
+            //----Debugging
+
             return true;
         }
 
@@ -182,11 +189,11 @@ public class ChatActivity extends AppCompatActivity implements MessageParser.Mes
 
     @Override
     public void onTimeout() {
-        Toast.makeText(this, "TIMEOUT", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "TIMEOUT", Toast.LENGTH_LONG).show(); //TODO: Normal message
 
         timer_task.cancel();
         Intent intent = new Intent(this, VotingActivity.class);
-        intent.putExtra(getIntent().getStringExtra(NAME_INTENT), NAME_INTENT);
+        intent.putExtra(NAME_INTENT, op_name);
         startActivity(intent);
     }
 

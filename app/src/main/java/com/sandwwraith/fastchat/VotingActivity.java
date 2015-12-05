@@ -23,6 +23,8 @@ import java.util.Date;
 
 public class VotingActivity extends AppCompatActivity implements MessageParser.MessageResult, View.OnClickListener {
 
+    public final static String LOG_TAG = "vote_activity";
+
     private int my_vote = -1;
     private int op_vote = -1;
     private Pair<String, String> op_result = null;
@@ -124,10 +126,14 @@ public class VotingActivity extends AppCompatActivity implements MessageParser.M
             case R.id.button_like:
                 msg = MessageSerializer.serializeVoting(true, SocialManager.getUser(SocialManager.Types.TYPE_VK)); //TODO: Facebook
                 my_vote = 1;
+                //noinspection deprecation
+                v.setBackgroundColor(getResources().getColor(R.color.vote_Like));
                 break;
             case R.id.button_dislike:
                 msg = MessageSerializer.serializeVoting(false, SocialManager.getUser(SocialManager.Types.TYPE_VK));
                 my_vote = 0;
+                //noinspection deprecation
+                v.setBackgroundColor(getResources().getColor(R.color.vote_Dislike));
                 break;
         }
 
@@ -135,9 +141,6 @@ public class VotingActivity extends AppCompatActivity implements MessageParser.M
         findViewById(R.id.button_dislike).setClickable(false);
 
         if (msg != null) messenger.send(msg);
-
-        //noinspection deprecation
-        v.setBackgroundColor(getResources().getColor(R.color.votePick));
 
         if (op_vote != -1) this.finishVote();
     }

@@ -83,6 +83,7 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
         //Checking connection
         if (!isOnline()) {
             notifyUser(R.string.network_NA);
+            //TODO: Remove 'Loading...' label
         } else {
             manager = new SocialManager(this, this);
             manager.validateToken(SocialManager.Types.TYPE_VK);
