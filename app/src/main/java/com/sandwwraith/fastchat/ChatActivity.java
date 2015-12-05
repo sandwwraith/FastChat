@@ -51,7 +51,7 @@ public class ChatActivity extends AppCompatActivity implements MessageParser.Mes
     RecyclerView recyclerView;
     private TimerTick timer_task;
 
-    private ArrayList<MessageHolder> messages = new ArrayList<>(); //TODO: Save messages
+    private ArrayList<MessageHolder> messages = new ArrayList<>(); //TODO: Save messages... or just prohibit rotation ???
 
     private int seconds = 5 * 60;
 
@@ -119,6 +119,7 @@ public class ChatActivity extends AppCompatActivity implements MessageParser.Mes
         });
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler);
+        recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new RecyclerAdapter();
         recyclerView.setAdapter(adapter);
@@ -151,6 +152,16 @@ public class ChatActivity extends AppCompatActivity implements MessageParser.Mes
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Take care of popping the fragment back stack or finishing the activity
+     * as appropriate.
+     */
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        //TODO: Send LEAVE message, when server would be ready to it.
+    }
+
     private void timedOutEvent() {
         messenger.send(MessageSerializer.serializeTimeout());
         this.onTimeout();
@@ -171,8 +182,12 @@ public class ChatActivity extends AppCompatActivity implements MessageParser.Mes
 
     @Override
     public void onTimeout() {
-        //TODO: Timeout handle
         Toast.makeText(this, "TIMEOUT", Toast.LENGTH_LONG).show();
+
+        timer_task.cancel();
+        Intent intent = new Intent(this, VotingActivity.class);
+        intent.putExtra(getIntent().getStringExtra(NAME_INTENT), NAME_INTENT);
+        startActivity(intent);
     }
 
     @Override
@@ -182,7 +197,7 @@ public class ChatActivity extends AppCompatActivity implements MessageParser.Mes
 
     @Override
     public void onLeave() {
-
+        //TODO: Handle opponent leaving
     }
 
     @Override
@@ -322,7 +337,7 @@ public class ChatActivity extends AppCompatActivity implements MessageParser.Mes
     @Override
     protected void onDestroy() {
         if (timer_task != null) timer_task.cancel();
-        unbindService(connection);
+        if (messenger != null) unbindService(connection);
         super.onDestroy();
     }
 

@@ -9,4 +9,8 @@
     <string name="network_NA">Network not available</string>
     <string name="service_NA">Sorry, service is temporarily unavailable</string>
     <string name="search_pair">Searching opponent…</string>
+    <string name="title_activity_voting">Voting</string>
+    <string name="text_like">Like</string>
+    <string name="text_dislike">Dislike</string>
+    <string name="voting_greet">Did you like your opponent?</string>
 </resources>
