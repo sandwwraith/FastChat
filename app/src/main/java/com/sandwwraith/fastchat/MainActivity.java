@@ -167,7 +167,7 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
     @Override
     public void onUserInfoFailed(SocialManager.Types type, SocialWrapper.ErrorStorage lastError) {
         //Обработка различных ошибок. Пока что обрабатываем только устраревший токен
-        notifyUser(lastError.getErrorDescription());
+        notifyUser(lastError.toString());
         this.onValidationFail(type);
     }
 

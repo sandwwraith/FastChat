@@ -39,7 +39,7 @@ public interface SocialWrapper {
 
         @Override
         public String toString() {
-            return getErrorDescription();
+            return "Error #" + code + ": " + getErrorDescription();
         }
     }
 }
