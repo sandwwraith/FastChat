@@ -228,7 +228,7 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
         }
     }
 
-    public class EnqueueClick implements View.OnClickListener {
+    public class EnqueueClick implements View.OnClickListener { //TODO: Make ability to cancel enqueue
 
         /**
          * Handles click from the view (actually, from floating button)

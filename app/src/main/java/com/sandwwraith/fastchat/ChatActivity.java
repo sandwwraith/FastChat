@@ -119,7 +119,7 @@ public class ChatActivity extends AppCompatActivity implements MessageParser.Mes
         });
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler);
-        recyclerView.setHasFixedSize(true);
+        recyclerView.setHasFixedSize(false);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new RecyclerAdapter();
         recyclerView.setAdapter(adapter);
@@ -158,10 +158,6 @@ public class ChatActivity extends AppCompatActivity implements MessageParser.Mes
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * Take care of popping the fragment back stack or finishing the activity
-     * as appropriate.
-     */
     @Override
     public void onBackPressed() {
         LeaveDialogFragment lf = new LeaveDialogFragment();
@@ -170,8 +166,8 @@ public class ChatActivity extends AppCompatActivity implements MessageParser.Mes
 
     @Override
     public void onLeaveConfirm() {
-        //TODO: send Leave message
-        super.onBackPressed();
+        messenger.send(MessageSerializer.serializeLeave());
+        returnToMain();
     }
 
     private void timedOutEvent() {
@@ -210,6 +206,14 @@ public class ChatActivity extends AppCompatActivity implements MessageParser.Mes
     @Override
     public void onLeave() {
         //TODO: Handle opponent leaving
+        Toast.makeText(this, "YOU PARTNER IS PIDOR", Toast.LENGTH_LONG).show();
+        returnToMain();
+    }
+
+    public void returnToMain() {
+        Intent in = new Intent(getApplicationContext(), MainActivity.class);
+        in.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(in);
     }
 
     @Override

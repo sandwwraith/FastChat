@@ -7,6 +7,8 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.sandwwraith.fastchat.clientUtils.MessageSerializer;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,13 +17,19 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.Arrays;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MessengerService extends Service {
 
     public static final String LOG_TAG = "msg_service";
     public static final String ADDRESS = "10.10.10.18";
     public static final int TIMEOUT = 5000; //in ms
-
+    /**
+     * Amount in ms after that service will be closed, if there are
+     * no users of the service
+     */
+    private final static long KILL_DELAY = 5000;
     //Connection to service
     //Refer to documentation, "Bound service"
     //or to lesson #5
@@ -31,20 +39,33 @@ public class MessengerService extends Service {
     private connectResultHandler connectCallback = null;
     private messageHandler messageCallback = null;
     private ReceiveTask receiveTask = null;
+    private int users = 0;
+    private KillTask killer = null;
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        return START_NOT_STICKY;
+    }
 
     @Override
     public IBinder onBind(Intent intent) {
+        users++;
+        if (killer != null) {
+            killer.cancel();
+            killer = null;
+        }
         return binder;
     }
 
     @Override
-    public void onDestroy() {
-        try {
-            close();
-        } catch (Exception e) {
-            Log.wtf(LOG_TAG, "Cannot stop service: " + e.getMessage());
+    public boolean onUnbind(Intent intent) {
+        users--;
+        if (users == 0) {
+            Log.i(LOG_TAG, "No connection, closing");
+            killer = new KillTask();
+            new Timer().schedule(killer, KILL_DELAY);
         }
-
+        return super.onUnbind(intent);
     }
 
     /**
@@ -84,21 +105,6 @@ public class MessengerService extends Service {
         this.messageCallback = callback;
         receiveTask = new ReceiveTask();
         receiveTask.execute();
-    }
-
-    /**
-     * Обрывает приём данных и закрывает сокет
-     * TODO: Normal closing
-     *
-     * @throws IOException Если что-то пошло не так.
-     */
-    public void close() throws IOException {
-        if (!connected()) return;
-        send(new byte[]{3}); //Ctrl+C
-        if (receiveTask != null)
-            receiveTask.cancel(false);
-        if (sock != null)
-            sock.close();
     }
 
     public interface connectResultHandler {
@@ -228,6 +234,29 @@ public class MessengerService extends Service {
         protected void onProgressUpdate(byte[]... values) {
             if (MessengerService.this.messageCallback != null)
                 MessengerService.this.messageCallback.processMessage(values[0]);
+        }
+    }
+
+    /**
+     * Поток, который посылает сообщение на сервер о завершении работы
+     * и закрывает все соединения
+     */
+    private class KillTask extends TimerTask {
+        @Override
+        public void run() {
+            MessengerService.this.receiveTask.cancel(true);
+            MessengerService.this.receiveTask = null;
+
+            DataSender s = new DataSender(MessageSerializer.serializeDisconnect());
+            s.run();
+            if (MessengerService.this.sock != null)
+                try {
+                    sock.close();
+                } catch (IOException e) {
+                    Log.wtf(LOG_TAG, "Cannot close socket: " + e.getMessage());
+                }
+            Log.i(LOG_TAG, "Disconnect success");
+            MessengerService.this.stopSelf();
         }
     }
 

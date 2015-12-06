@@ -168,6 +168,11 @@ public class VotingActivity extends AppCompatActivity implements MessageParser.M
      */
     @Override
     public void onBackPressed() {
+        if (my_vote == -1) {
+            my_vote = 0;
+            messenger.send(MessageSerializer.serializeVoting(
+                    false, SocialManager.getUser(SocialManager.Types.TYPE_VK)));
+        }
         this.returnToMain(false);
     }
 
