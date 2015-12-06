@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import com.sandwwraith.fastchat.chatUtils.LeaveDialogFragment;
 import com.sandwwraith.fastchat.chatUtils.MessageHolder;
+import com.sandwwraith.fastchat.chatUtils.PartnerLeavedDialogFragment;
 import com.sandwwraith.fastchat.clientUtils.MessageParser;
 import com.sandwwraith.fastchat.clientUtils.MessageSerializer;
 import com.sandwwraith.fastchat.clientUtils.Pair;
@@ -35,7 +36,10 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class ChatActivity extends AppCompatActivity implements MessageParser.MessageResult, LeaveDialogFragment.LeaveDialogFragmentListener {
+public class ChatActivity extends AppCompatActivity implements
+        MessageParser.MessageResult
+        , LeaveDialogFragment.LeaveDialogFragmentListener
+        , PartnerLeavedDialogFragment.PartnerLeavedDialogListener {
 
     public static final String NAME_INTENT = "NAME_INTENT";
     public static final String GENDER_INTENT = "GENDER_INTENT";
@@ -167,7 +171,7 @@ public class ChatActivity extends AppCompatActivity implements MessageParser.Mes
     @Override
     public void onLeaveConfirm() {
         messenger.send(MessageSerializer.serializeLeave());
-        returnToMain();
+        returnToMain(false);
     }
 
     private void timedOutEvent() {
@@ -205,14 +209,15 @@ public class ChatActivity extends AppCompatActivity implements MessageParser.Mes
 
     @Override
     public void onLeave() {
-        //TODO: Handle opponent leaving
-        Toast.makeText(this, "YOU PARTNER IS PIDOR", Toast.LENGTH_LONG).show();
-        returnToMain();
+        PartnerLeavedDialogFragment plf = new PartnerLeavedDialogFragment();
+        plf.show(getFragmentManager(), "partnerLeaved");
     }
 
-    public void returnToMain() {
+    @Override
+    public void returnToMain(boolean enqueueNow) {
         Intent in = new Intent(getApplicationContext(), MainActivity.class);
         in.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        in.putExtra(VotingActivity.ENQUEUE_NOW, enqueueNow);
         startActivity(in);
     }
 

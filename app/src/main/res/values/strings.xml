@@ -18,4 +18,7 @@
     <string name="leave_confirm">Leave</string>
     <string name="cancel">Cancel</string>
     <string name="try_again">Try again!</string>
+    <string name="partner_leaved">Unfortunately, you opponent leaved. Find a new one?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>

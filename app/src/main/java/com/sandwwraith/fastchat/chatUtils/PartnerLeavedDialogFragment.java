@@ -13,35 +13,35 @@ import com.sandwwraith.fastchat.R;
  * Created by sandwwraith(@gmail.com)
  * ITMO University, 2015.
  */
-public class LeaveDialogFragment extends DialogFragment {
-    LeaveDialogFragmentListener callBack;
+public class PartnerLeavedDialogFragment extends DialogFragment {
+    PartnerLeavedDialogListener mListener;
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        mListener = (PartnerLeavedDialogListener) activity;
+    }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // Use the Builder class for convenient dialog construction
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage(R.string.confirm_leave_title)
-                .setPositiveButton(R.string.leave_confirm, new DialogInterface.OnClickListener() {
+        builder.setMessage(R.string.partner_leaved)
+                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        callBack.onLeaveConfirm();
+                        mListener.returnToMain(true);
                     }
                 })
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        // User cancelled the dialog
+                        mListener.returnToMain(false);
                     }
                 });
         // Create the AlertDialog object and return it
         return builder.create();
     }
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        callBack = (LeaveDialogFragmentListener) activity;
-    }
-
-    public interface LeaveDialogFragmentListener {
-        void onLeaveConfirm();
+    public interface PartnerLeavedDialogListener {
+        void returnToMain(boolean enqueueNow);
     }
 }
