@@ -1,12 +1,9 @@
-package com.sandwwraith.fastchat;
+package com.sandwwraith.fastchat.chatUtils;
 
 import android.content.Context;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.widget.LinearLayout;
-
-
-import java.util.jar.Attributes;
 
 /**
  * Created by dns on 06.12.2015.

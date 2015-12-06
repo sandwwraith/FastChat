@@ -19,21 +19,22 @@
         android:layout_alignParentBottom="true">
 
         <EditText
+            android:id="@+id/msg_text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="5"
             android:hint="@string/messagefield_hint"
-            android:id="@+id/msg_text"
             android:inputType="textCapSentences|textMultiLine|textAutoCorrect|text" />
 
         <ImageButton
+            android:id="@+id/send_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:padding="5dp"
-            android:src="@drawable/ic_send"
             android:background="#00000000"
-            android:id="@+id/send_button" />
+            android:padding="5dp"
+            android:src="@android:drawable/ic_media_play" />
+        <!-- TODO: Send icon -->
 
     </LinearLayout>
 
