@@ -19,4 +19,7 @@
     <string name="voting_greet">Как вам ваш собеседник?</string>
     <string name="text_like">ЗБС</string>
     <string name="text_dislike">ХУЙНЯ</string>
+    <string name="no">Нет</string>
+    <string name="partner_leaved">К сожалению, ваш собеседник вышел. Найти нового?</string>
+    <string name="yes">Да</string>
 </resources>

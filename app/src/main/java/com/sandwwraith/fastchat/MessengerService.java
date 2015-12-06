@@ -89,7 +89,7 @@ public class MessengerService extends Service {
      * @throws IllegalStateException Если сокет не соединён
      */
     public void send(byte[] msg) throws IllegalStateException {
-        if (!connected()) throw new IllegalStateException("Not connected");
+//        if (!connected()) throw new IllegalStateException("Not connected");
         new Thread(new DataSender(msg)).start();
     }
 
@@ -100,7 +100,7 @@ public class MessengerService extends Service {
      * @throws IllegalStateException Если сокет не соединён
      */
     public void setReceiver(messageHandler callback) throws IllegalStateException {
-        if (!connected()) throw new IllegalStateException("Not connected");
+//        if (!connected()) throw new IllegalStateException("Not connected");
         if (receiveTask != null) receiveTask.cancel(false);
         this.messageCallback = callback;
         receiveTask = new ReceiveTask();

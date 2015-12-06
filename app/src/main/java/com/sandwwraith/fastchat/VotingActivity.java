@@ -61,9 +61,9 @@ public class VotingActivity extends AppCompatActivity implements MessageParser.M
         textName = ((TextView) findViewById(R.id.text_name));
         textName.setText(name);
 
-//        connectService();
-        findViewById(R.id.button_like).setOnClickListener(VotingActivity.this);
-        findViewById(R.id.button_dislike).setOnClickListener(VotingActivity.this);
+        connectService();
+//        findViewById(R.id.button_like).setOnClickListener(VotingActivity.this);
+//        findViewById(R.id.button_dislike).setOnClickListener(VotingActivity.this);
     }
 
     private void connectService() {
@@ -141,7 +141,7 @@ public class VotingActivity extends AppCompatActivity implements MessageParser.M
         findViewById(R.id.button_like).setClickable(false);
         findViewById(R.id.button_dislike).setClickable(false);
 
-//        if (msg != null) messenger.send(msg);
+        if (msg != null) messenger.send(msg);
 
         if (op_vote != -1) this.finishVote();
     }

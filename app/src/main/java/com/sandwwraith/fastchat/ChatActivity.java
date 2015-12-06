@@ -33,7 +33,6 @@ import com.sandwwraith.fastchat.clientUtils.Pair;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -109,19 +108,19 @@ public class ChatActivity extends AppCompatActivity implements
         getSupportActionBar().setTitle(op_name);
         getSupportActionBar().setSubtitle(theme);
 
-        String[] testMess = {"Small text", "Medium text which can take a lot", "Very very very very long text probably on severl" +
+       /* String[] testMess = {"Small text", "Medium text which can take a lot", "Very very very very long text probably on severl" +
                 "strings I don't even know how much can it take it also has difficult words such as supercalifragilisticexpialidocious"};
         editText = (EditText) findViewById(R.id.msg_text);
         for (int i = 0; i < 15; i++)
             messages.add(new MessageHolder(new Pair<>(new Date(), testMess[new Random().nextInt(3)]),
-                    new Random().nextBoolean() ? MessageHolder.M_RECV : MessageHolder.M_SEND));
+                    new Random().nextBoolean() ? MessageHolder.M_RECV : MessageHolder.M_SEND));*/
         findViewById(R.id.send_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String msg = editText.getText().toString();
                 if (msg.trim().equals("")) return;
                 messages.add(new MessageHolder(msg));
-//                messenger.send(MessageSerializer.serializeMessage(msg));
+                messenger.send(MessageSerializer.serializeMessage(msg));
                 editText.setText("");
                 adapter.notifyDataSetChanged();
                 recyclerView.smoothScrollToPosition(adapter.getItemCount());
@@ -134,7 +133,7 @@ public class ChatActivity extends AppCompatActivity implements
         adapter = new RecyclerAdapter();
         recyclerView.setAdapter(adapter);
 
-//        connectService();
+        connectService();
     }
 
     @Override
@@ -158,7 +157,7 @@ public class ChatActivity extends AppCompatActivity implements
         if (id == R.id.chat_timer) {
 
             //----DEBUGGING
-//            timer_task.cancel();
+            timer_task.cancel();
             this.timedOutEvent();
             //----Debugging
 
@@ -181,7 +180,7 @@ public class ChatActivity extends AppCompatActivity implements
     }
 
     private void timedOutEvent() {
-//        messenger.send(MessageSerializer.serializeTimeout());
+        messenger.send(MessageSerializer.serializeTimeout());
         this.onTimeout();
     }
 
@@ -202,7 +201,7 @@ public class ChatActivity extends AppCompatActivity implements
     public void onTimeout() {
         Toast.makeText(this, R.string.timeout_msg, Toast.LENGTH_SHORT).show();
 
-//        timer_task.cancel();
+        timer_task.cancel();
         Intent intent = new Intent(this, VotingActivity.class);
         intent.putExtra(NAME_INTENT, op_name);
         startActivity(intent);
