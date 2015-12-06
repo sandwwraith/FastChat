@@ -8,11 +8,11 @@
     <string name="greetings">Greetings, traveller!</string>
     <string name="network_NA">Network not available</string>
     <string name="service_NA">Sorry, service is temporarily unavailable</string>
-    <string name="search_pair">Searching opponent…</string>
+    <string name="search_pair">Searching partner…</string>
     <string name="title_activity_voting">Voting</string>
     <string name="text_like">Like</string>
     <string name="text_dislike">Dislike</string>
-    <string name="voting_greet">Did you like your opponent?</string>
+    <string name="voting_greet">Did you like your partner?</string>
     <string name="timeout_msg">Time out!</string>
     <string name="confirm_leave_title">Are you really want to leave?</string>
     <string name="leave_confirm">Leave</string>
