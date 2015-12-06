@@ -107,10 +107,10 @@ public class ChatActivity extends AppCompatActivity implements
         //noinspection ConstantConditions
         getSupportActionBar().setTitle(op_name);
         getSupportActionBar().setSubtitle(theme);
+        editText = (EditText) findViewById(R.id.msg_text);
 
        /* String[] testMess = {"Small text", "Medium text which can take a lot", "Very very very very long text probably on severl" +
                 "strings I don't even know how much can it take it also has difficult words such as supercalifragilisticexpialidocious"};
-        editText = (EditText) findViewById(R.id.msg_text);
         for (int i = 0; i < 15; i++)
             messages.add(new MessageHolder(new Pair<>(new Date(), testMess[new Random().nextInt(3)]),
                     new Random().nextBoolean() ? MessageHolder.M_RECV : MessageHolder.M_SEND));*/

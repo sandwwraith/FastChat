@@ -33,8 +33,7 @@
             android:layout_weight="1"
             android:background="#00000000"
             android:padding="5dp"
-            android:src="@android:drawable/ic_media_play" />
-        <!-- TODO: Send icon -->
+            android:src="@drawable/ic_send" />
 
     </LinearLayout>
 
