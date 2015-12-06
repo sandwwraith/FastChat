@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FastChat</string>
+    <string name="action_settings">Настройки</string>
+    <string name="cancel">Отмена</string>
+    <string name="confirm_leave_title">Вы действительно хотите покинуть разговор?</string>
+    <string name="connecting">Подключение...</string>
+    <string name="greetings">Здарова, уёба!</string>
+    <string name="leave_confirm">Покинуть</string>
+    <string name="loading">Загрузка...</string>
+    <string name="messagefield_hint">Написать сообщение...</string>
+    <string name="network_NA">Сеть недоступна</string>
+    <string name="not_authorized">Вход не выполнен</string>
+    <string name="search_pair">Поиск собеседника...</string>
+    <string name="service_NA">Извините, сервис временно недоступен</string>
+    <string name="timeout_msg">Время вышло!</string>
+    <string name="title_activity_voting">Голосование</string>
+    <string name="try_again">Поищем ещё!</string>
+    <string name="voting_greet">Как вам ваш собеседник?</string>
+    <string name="text_like">ЗБС</string>
+    <string name="text_dislike">ХУЙНЯ</string>
+</resources>

@@ -24,13 +24,15 @@
             android:layout_weight="5"
             android:hint="@string/messagefield_hint"
             android:id="@+id/msg_text"
-            android:inputType="textCapSentences|textShortMessage|textAutoCorrect|text" />
+            android:inputType="textCapSentences|textMultiLine|textAutoCorrect|text" />
 
         <ImageButton
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:src="@android:drawable/ic_media_play"
+            android:padding="5dp"
+            android:src="@drawable/ic_send"
+            android:background="#00000000"
             android:id="@+id/send_button" />
 
     </LinearLayout>
