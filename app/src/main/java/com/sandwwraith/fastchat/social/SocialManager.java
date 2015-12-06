@@ -21,65 +21,11 @@ import javax.net.ssl.HttpsURLConnection;
  */
 public class SocialManager {
 
-    private final String LOG_TAG = "social_manager";
-
-    public enum Types {
-        TYPE_VK, TYPE_DUMMY;
-
-        public static final String Intent_Param = "INTENT_PARAM_TYPE";
-
-        public String getTokenString() {
-            if (this == TYPE_VK) return "type_vk_token";
-            else throw new IllegalStateException("Incorrect type");
-        }
-
-        public String getIdString() {
-            if (this == TYPE_VK) return "type_vk_id";
-            else throw new IllegalStateException("Incorrect type");
-        }
-
-        public SocialWrapper getWrapper() {
-            if (this == TYPE_VK) return new VkWrapper();
-            else throw new IllegalStateException("Incorrect type");
-        }
-    }
-
     private static SocialUser[] users = new SocialUser[Types.values().length]; //Freaking
-
-
-    public interface SocialManagerCallback {
-        /**
-         * Вызыватеся после неуспешной проверки токенов. Нужно уведомить пользователя о необходимости авторизации
-         */
-        void onValidationFail(Types type);
-
-        /**
-         * Вызывается после успешного запроса данных пользователя
-         *
-         * @param user Данные о пользователе
-         */
-        void onUserInfoUpdated(SocialUser user);
-
-        /**
-         * Вызывается после неуспешного запроса данных пользователя
-         *
-         * @param type      Тип соц.сети
-         * @param lastError Информация об ошибке
-         */
-        void onUserInfoFailed(Types type, SocialWrapper.ErrorStorage lastError);
-    }
-
-
-    public static SocialUser getUser(Types type) {
-        return users[type.ordinal()];
-    }
-
-    private static void saveUser(Types type, SocialUser user) {
-        users[type.ordinal()] = user;
-    }
-
+    private final String LOG_TAG = "social_manager";
     private Activity prefHost;
     private SocialManagerCallback callback;
+
 
     /**
      * Создаёт новый экземпляр, привязанный к текущей Activity. Привязка нужна для получения SharedPreferences,
@@ -91,6 +37,14 @@ public class SocialManager {
     public SocialManager(Activity context, SocialManagerCallback callback) {
         this.prefHost = context;
         this.callback = callback;
+    }
+
+    public static SocialUser getUser(Types type) {
+        return users[type.ordinal()];
+    }
+
+    private static void saveUser(Types type, SocialUser user) {
+        users[type.ordinal()] = user;
     }
 
     /**
@@ -142,6 +96,55 @@ public class SocialManager {
 
         //Launch updateInfo
         new UserInfoTask().execute(type_s, tok, id);
+    }
+
+    public enum Types {
+        TYPE_VK {
+            @Override
+            public String getTokenString() {
+                return "type_vk_token";
+            }
+
+            @Override
+            public String getIdString() {
+                return "type_vk_id";
+            }
+
+            @Override
+            public SocialWrapper getWrapper() {
+                return new VkWrapper();
+            }
+        };
+
+        public static final String Intent_Param = "INTENT_PARAM_SOCIAL_TYPE";
+
+        public abstract String getTokenString();
+
+        public abstract String getIdString();
+
+        public abstract SocialWrapper getWrapper();
+    }
+
+    public interface SocialManagerCallback {
+        /**
+         * Вызыватеся после неуспешной проверки токенов. Нужно уведомить пользователя о необходимости авторизации
+         */
+        void onValidationFail(Types type);
+
+        /**
+         * Вызывается после успешного запроса данных пользователя
+         *
+         * @param user Данные о пользователе
+         */
+        void onUserInfoUpdated(SocialUser user);
+
+        /**
+         * Вызывается после неуспешного запроса данных пользователя
+         *
+         * @param type      Тип соц.сети
+         * @param lastError Информация об ошибке
+         */
+        void onUserInfoFailed(Types type, SocialWrapper.ErrorStorage lastError);
     }
 
     /**
