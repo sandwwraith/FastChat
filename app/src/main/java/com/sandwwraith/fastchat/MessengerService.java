@@ -244,9 +244,9 @@ public class MessengerService extends Service {
     private class KillTask extends TimerTask {
         @Override
         public void run() {
-            MessengerService.this.receiveTask.cancel(true);
-            MessengerService.this.receiveTask = null;
-
+            if (!connected()) return;
+            if (MessengerService.this.receiveTask != null) receiveTask.cancel(true);
+            receiveTask = null;
             DataSender s = new DataSender(MessageSerializer.serializeDisconnect());
             s.run();
             if (MessengerService.this.sock != null)

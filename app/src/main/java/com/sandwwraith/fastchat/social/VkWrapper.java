@@ -14,6 +14,7 @@ import java.net.URL;
  */
 public class VkWrapper implements SocialWrapper {
 
+    private static ErrorStorage lastError = null;
     private final String LOG_TAG = "vk_wrapper";
     String AppID = "5154453";
 
@@ -45,7 +46,7 @@ public class VkWrapper implements SocialWrapper {
     @Override
     public URL generateUserInfoRequest(String token, String id) {
         String part1 = "https://api.vk.com/method/users.get?v=5.8&users_ids=";
-        String part2 = "&fields=photo_100,sex&access_token=";
+        String part2 = "&fields=photo_200_orig,sex&access_token=";
         URL res = null;
         try {
             res = new URL(part1 + id + part2 + token);
@@ -96,7 +97,7 @@ public class VkWrapper implements SocialWrapper {
             }
             reader.beginArray();
             reader.beginObject();
-            String first = "", last = "", id = "-1";
+            String first = "", last = "", id = "-1", image_link = "";
             int sex = 0;
             while (reader.hasNext()) {
                 String section = reader.nextName();
@@ -113,6 +114,9 @@ public class VkWrapper implements SocialWrapper {
                     case "sex":
                         sex = Integer.parseInt(reader.nextString());
                         break;
+                    case "photo_200_orig":
+                        image_link = reader.nextString();
+                        break;
                     default:
                         reader.skipValue();
                 }
@@ -121,15 +125,13 @@ public class VkWrapper implements SocialWrapper {
             reader.endArray();
             reader.endObject();
             String link = "https://vk.com/id" + id;
-            return new SocialUser(id, SocialManager.Types.TYPE_VK, first, last, link, sex);
+            return new SocialUser(id, SocialManager.Types.TYPE_VK, first, last, link, image_link, sex);
 
         } catch (IOException e) {
             Log.e(LOG_TAG, "Parser exception: " + e.getMessage());
         }
         return null;
     }
-
-    private static ErrorStorage lastError = null;
 
     @Override
     public ErrorStorage getLastError() {

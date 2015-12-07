@@ -16,14 +16,17 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.sandwwraith.fastchat.clientUtils.MessageDeserializer;
 import com.sandwwraith.fastchat.clientUtils.MessageSerializer;
 import com.sandwwraith.fastchat.clientUtils.Pair;
+import com.sandwwraith.fastchat.social.CircleTransform;
 import com.sandwwraith.fastchat.social.SocialManager;
 import com.sandwwraith.fastchat.social.SocialUser;
 import com.sandwwraith.fastchat.social.SocialWrapper;
+import com.squareup.picasso.Picasso;
 
 public class MainActivity extends AppCompatActivity implements MessengerService.connectResultHandler, MessengerService.messageHandler, SocialManager.SocialManagerCallback {
 
@@ -174,10 +177,19 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
     @Override
     public void onUserInfoUpdated(SocialUser user) {
         connectService();
+        ImageButton img;
         if (user.getType() == SocialManager.Types.TYPE_VK) {
-
             ((TextView) findViewById(R.id.vk_text)).setText(user.toString());
+            img = (ImageButton) findViewById(R.id.vk_image);
+        } else {
+            //FB work
+            img = (ImageButton) findViewById(R.id.fb_image);
         }
+        Picasso.with(getApplicationContext()).
+                load(user.getImageUrl()).
+                resize(img.getWidth(), img.getHeight()).centerCrop().
+                transform(new CircleTransform()).
+                into(img);
     }
 
     public void notifyUser(String message) {
