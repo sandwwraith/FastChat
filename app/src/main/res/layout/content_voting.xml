@@ -73,4 +73,16 @@
         android:layout_marginBottom="@dimen/activity_vertical_margin"
         android:text="@string/try_again"
         android:visibility="invisible" />
+
+    <TextView
+        android:id="@+id/votingTimerText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView3"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="48dp"
+        android:text="30"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textSize="48sp"
+        android:visibility="invisible" />
 </RelativeLayout>

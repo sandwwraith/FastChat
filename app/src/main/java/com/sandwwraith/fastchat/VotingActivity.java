@@ -20,16 +20,24 @@ import com.sandwwraith.fastchat.clientUtils.MessageSerializer;
 import com.sandwwraith.fastchat.clientUtils.Pair;
 import com.sandwwraith.fastchat.social.SocialManager;
 
+import java.text.DecimalFormat;
 import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class VotingActivity extends AppCompatActivity implements MessageParser.MessageResult, View.OnClickListener {
 
     public final static String LOG_TAG = "vote_activity";
     public static final String ENQUEUE_NOW = "ENQUEUE_NOW";
-    TextView textName;
+    private TextView textName;
+    private TextView timerTextView;
+
     private int my_vote = -1;
     private int op_vote = -1;
     private Pair<String, String> op_result = null;
+
+    private VoteTimer voteTimer = null;
+
     private MessengerService messenger = null;
     private ServiceConnection connection = new ServiceConnection() {
         @Override
@@ -41,7 +49,10 @@ public class VotingActivity extends AppCompatActivity implements MessageParser.M
 
             findViewById(R.id.button_like).setOnClickListener(VotingActivity.this);
             findViewById(R.id.button_dislike).setOnClickListener(VotingActivity.this);
+            timerTextView.setVisibility(View.VISIBLE);
 
+            voteTimer = new VoteTimer();
+            new Timer().scheduleAtFixedRate(voteTimer, 1000, 1000);
         }
 
         @Override
@@ -49,6 +60,7 @@ public class VotingActivity extends AppCompatActivity implements MessageParser.M
 
         }
     };
+    private int seconds = 30;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +72,9 @@ public class VotingActivity extends AppCompatActivity implements MessageParser.M
         String name = getIntent().getStringExtra(ChatActivity.NAME_INTENT);
         textName = ((TextView) findViewById(R.id.text_name));
         textName.setText(name);
+
+        timerTextView = (TextView) (findViewById(R.id.votingTimerText));
+        timerTextView.setText(formatSeconds());
 
         connectService();
 //        findViewById(R.id.button_like).setOnClickListener(VotingActivity.this);
@@ -147,6 +162,9 @@ public class VotingActivity extends AppCompatActivity implements MessageParser.M
     }
 
     private void finishVote() {
+        if (voteTimer != null) voteTimer.cancel();
+        timerTextView.setVisibility(View.GONE);
+
         if (my_vote == 1 && op_vote == 1) {
             textName.setText(op_result.first);
             TextView url = ((TextView) findViewById(R.id.url_place));
@@ -195,5 +213,35 @@ public class VotingActivity extends AppCompatActivity implements MessageParser.M
     protected void onDestroy() {
         if (messenger != null) unbindService(connection);
         super.onDestroy();
+    }
+
+    private String formatSeconds() {
+        return new DecimalFormat("00").format(seconds);
+    }
+
+    private class VoteTimer extends TimerTask {
+        @Override
+        public void run() {
+            seconds--;
+            if (seconds <= 0) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        //Simulating user behaviour
+                        if (my_vote == -1)
+                            findViewById(R.id.button_dislike).callOnClick();
+                        if (op_vote == -1)
+                            VotingActivity.this.onVotingResults(new Pair<String, String>(null, null));
+                    }
+                });
+            } else {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        timerTextView.setText(formatSeconds());
+                    }
+                });
+            }
+        }
     }
 }
