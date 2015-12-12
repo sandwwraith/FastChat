@@ -30,7 +30,7 @@ public class MessengerService extends Service {
      * Amount in ms after that service will be closed, if there are
      * no users of the service
      */
-    private final static long KILL_DELAY = 5000;
+    private final static long KILL_DELAY = 1500;
     //Connection to service
     //Refer to documentation, "Bound service"
     //or to lesson #5

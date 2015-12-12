@@ -150,10 +150,20 @@ public class SocialManager {
     /**
      * Класс получает из типа, токена и ид всю информацию о пользователе
      * Первый параметр - тип (как строка), второй - токен, третий - id
+     *
+     * у этого класса очень странное поведение:
+     * onPreExecute выполняется моментально, а onPostExecute зачем то ждет
+     * выполнения запланированого KillerTask в MessengerService, который с ним вроде бы никак не связан.
+     * WTF ???!1
      */
     private class UserInfoTask extends AsyncTask<String, Void, SocialUser> {
         Types type;
         SocialWrapper.ErrorStorage lastError = null;
+
+        @Override
+        protected void onPreExecute() {
+            Log.d(LOG_TAG, "onPreExecute: ");
+        }
 
         @Override
         protected void onPostExecute(SocialUser socialUser) {
@@ -168,6 +178,7 @@ public class SocialManager {
 
         @Override
         protected SocialUser doInBackground(String... params) {
+            Log.d(LOG_TAG, "Started fetching");
             type = Types.valueOf(params[0]);
             String token = params[1];
             String id = params[2];
@@ -185,6 +196,7 @@ public class SocialManager {
                 if (user == null) {
                     this.lastError = wrapper.getLastError();
                 }
+                Log.d(LOG_TAG, "Finished fetching");
                 return user;
             } catch (IOException e) {
                 Log.e(LOG_TAG, "getting info error: " + e.getMessage());
