@@ -28,13 +28,13 @@
 
                 <ImageButton
                     android:id="@+id/vk_image"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_gravity="center"
                     android:layout_margin="5dp"
-                    android:src="@drawable/vk_icon"
                     android:background="@drawable/circle_button"
                     android:elevation="@dimen/button_elevation"
+                    android:src="@drawable/vk_icon"
                     android:stateListAnimator="@anim/animate_button_press"/>
             </FrameLayout>
 
@@ -44,14 +44,14 @@
 
                 <ImageButton
                     android:id="@+id/fb_image"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_gravity="center"
                     android:layout_margin="5dp"
+                    android:background="@drawable/circle_button"
                     android:elevation="@dimen/button_elevation"
-                    android:stateListAnimator="@anim/animate_button_press"
                     android:src="@drawable/facebook_icon"
-                    android:background="@drawable/circle_button"/>
+                    android:stateListAnimator="@anim/animate_button_press" />
             </FrameLayout>
         </TableRow>
 
