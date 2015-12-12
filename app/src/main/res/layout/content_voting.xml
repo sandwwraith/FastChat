@@ -16,9 +16,9 @@
         android:id="@+id/button_like"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/try_again_button"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_centerVertical="true"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_marginStart="@dimen/activity_horizontal_margin"
         android:text="@string/text_like" />
@@ -27,9 +27,9 @@
         android:id="@+id/button_dislike"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/try_again_button"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
         android:layout_marginEnd="@dimen/activity_horizontal_margin"
         android:layout_marginRight="@dimen/activity_horizontal_margin"
         android:text="@string/text_dislike" />
@@ -47,7 +47,7 @@
         android:id="@+id/url_place"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/button_like"
+        android:layout_below="@+id/text_name"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="@dimen/small_spacing"
         android:autoLink="web"
@@ -58,9 +58,10 @@
         android:id="@+id/text_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/url_place"
+        android:layout_below="@+id/votingTimerText"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="@dimen/small_spacing"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
         android:text=""
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -71,6 +72,7 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
         android:text="@string/try_again"
         android:visibility="invisible" />
 
@@ -80,7 +82,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/textView3"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="48dp"
+        android:layout_marginBottom="24dp"
+        android:layout_marginTop="36dp"
         android:text="30"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textSize="48sp"

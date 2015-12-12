@@ -104,6 +104,7 @@ public class VotingActivity extends AppCompatActivity implements MessageParser.M
     @Override
     public void onVotingResults(Pair<String, String> voted) {
         //HAHA, THAT'S WAT WE NEED
+        if (op_vote != -1) return;
         op_result = voted;
         if (op_result.first != null) op_vote = 1;
         else op_vote = 0;
