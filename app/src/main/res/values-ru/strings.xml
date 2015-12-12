@@ -20,4 +20,5 @@
     <string name="no">Нет</string>
     <string name="partner_leaved">К сожалению, ваш собеседник вышел. Найти нового?</string>
     <string name="yes">Да</string>
+    <string name="users_online">Пользователей онлайн:</string>
 </resources>

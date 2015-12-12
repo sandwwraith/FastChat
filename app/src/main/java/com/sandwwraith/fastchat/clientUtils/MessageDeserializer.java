@@ -9,20 +9,6 @@ import java.util.Date;
  * ITMO University, 2015.
  */
 public class MessageDeserializer {
-    public static class MessageDeserializerException extends Exception {
-        MessageDeserializerException() {
-            super();
-        }
-
-        MessageDeserializerException(String s) {
-            super(s);
-        }
-
-        MessageDeserializerException(String s, String required, String found) {
-            super(s + " Required: " + required + " Found: " + found);
-        }
-    }
-
     private static void validateSeq(byte[] raw, byte type, int requiredMinLength) throws MessageDeserializerException {
         if (raw.length < requiredMinLength)
             throw new MessageDeserializerException("Incorrect sequence length"
@@ -102,6 +88,40 @@ public class MessageDeserializer {
             return new Pair<>(name, url);
         } catch (IndexOutOfBoundsException e) {
             throw new MessageDeserializerException("Unexpected end of sequence");
+        }
+    }
+
+    /**
+     * Deserialize greetings message from server with number of users online
+     *
+     * @param raw Raw bytes from socket
+     * @return Number of users on server by the connection moment
+     * @throws MessageDeserializerException
+     */
+    public static int deserializeGreetings(byte[] raw) throws MessageDeserializerException {
+        if (raw.length < 1) throw new MessageDeserializerException("Zero-length sequence");
+        if (raw[0] != 42)
+            throw new MessageDeserializerException("Invalid response code", Integer.toString(42), Byte.toString(raw[0]));
+        if (raw.length < 5)
+            throw new MessageDeserializerException("Insufficient length", Integer.toString(5), Integer.toString(raw.length));
+
+        ByteBuffer buf = ByteBuffer.allocate(4);
+        buf.put(raw, 1, 4);
+        buf.flip();
+        return buf.getInt();
+    }
+
+    public static class MessageDeserializerException extends Exception {
+        MessageDeserializerException() {
+            super();
+        }
+
+        MessageDeserializerException(String s) {
+            super(s);
+        }
+
+        MessageDeserializerException(String s, String required, String found) {
+            super(s + " Required: " + required + " Found: " + found);
         }
     }
 }

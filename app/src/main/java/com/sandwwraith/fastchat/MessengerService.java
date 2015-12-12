@@ -7,12 +7,11 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.sandwwraith.fastchat.clientUtils.MessageDeserializer;
 import com.sandwwraith.fastchat.clientUtils.MessageSerializer;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -24,6 +23,8 @@ public class MessengerService extends Service {
 
     public static final String LOG_TAG = "msg_service";
     public static final String ADDRESS = "10.10.10.18";
+    public static final int PORT = 2539;
+
     public static final int TIMEOUT = 5000; //in ms
     /**
      * Amount in ms after that service will be closed, if there are
@@ -108,7 +109,7 @@ public class MessengerService extends Service {
     }
 
     public interface connectResultHandler {
-        void onConnectResult(boolean success);
+        void onConnectResult(boolean success, int usersOnline);
     }
 
     public interface messageHandler {
@@ -125,20 +126,20 @@ public class MessengerService extends Service {
      * Открывает сокет
      */
     private class ConnectionTask extends AsyncTask<Void, Void, Boolean> {
+        int users = -1;
         @Override
         protected void onPostExecute(Boolean aBoolean) {
             socketAvailable = aBoolean;
-            connectCallback.onConnectResult(aBoolean);
+            connectCallback.onConnectResult(aBoolean, users);
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            BufferedReader in = null;
-
             try {
-                if (sock != null) sock.close(); //TODO: Think how can it happen and what to do
+                if (sock != null)
+                    sock.close(); //Previous state was lost due to recreating MainActivity
                 sock = new Socket();
-                sock.connect(new InetSocketAddress(ADDRESS, 2539), TIMEOUT);
+                sock.connect(new InetSocketAddress(ADDRESS, PORT), TIMEOUT);
             } catch (IOException e) {
                 Log.e(MessengerService.LOG_TAG, "Can't open socket: " + e.getMessage());
                 return false;
@@ -146,17 +147,19 @@ public class MessengerService extends Service {
 
             try {
                 //Приём сообщения, сразу посылаемого сервером новым клиентам
-                in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
-                Log.i(MessengerService.LOG_TAG, "Greetings: " + in.readLine());
+                byte[] greet = new byte[5];
+                if (sock.getInputStream().read(greet, 0, 5) < 5)
+                    throw new IOException("Not enough length!");
+                users = MessageDeserializer.deserializeGreetings(greet);
+                Log.i(MessengerService.LOG_TAG, "Users online: " + Arrays.toString(greet));
                 return true;
-            } catch (IOException e) {
+            } catch (IOException | MessageDeserializer.MessageDeserializerException e) {
                 Log.e(MessengerService.LOG_TAG, "Cannot read greetings: " + e.getMessage());
                 try {
                     if (sock != null) {
                         sock.close();
                         sock = null;
                     }
-                    if (in != null) in.close();
                 } catch (Exception ee) {
                     Log.wtf(MessengerService.LOG_TAG, ee.getMessage());
                 }

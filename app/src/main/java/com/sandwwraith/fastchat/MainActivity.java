@@ -31,7 +31,7 @@ import com.squareup.picasso.Picasso;
 public class MainActivity extends AppCompatActivity implements MessengerService.connectResultHandler, MessengerService.messageHandler, SocialManager.SocialManagerCallback {
 
     private final static String LOG_TAG = "main_activity";
-    FloatingActionButton queueButton;
+    private FloatingActionButton queueButton;
     private SocialManager manager = null;
     private Snackbar snack = null;
     //Connection to service
@@ -156,8 +156,12 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
     }
 
     @Override
-    public void onConnectResult(boolean success) {
+    public void onConnectResult(boolean success, int usersOnline) {
         if (success) {
+            TextView users = (TextView) findViewById(R.id.text_usersOnline);
+            users.append(Integer.toString(usersOnline));
+            users.setVisibility(View.VISIBLE);
+
             queueButton.setVisibility(View.VISIBLE);
             queueButton.setOnClickListener(new EnqueueClick());
             messenger.setReceiver(MainActivity.this);
