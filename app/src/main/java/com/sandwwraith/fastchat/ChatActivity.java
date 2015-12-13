@@ -63,13 +63,15 @@ public class ChatActivity extends AppCompatActivity implements
     //Refer to documentation, "Bound service"
     //or to lesson #5
     private MessengerService messenger = null;
+    private MessageParser parser = null;
     private ServiceConnection connection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
             MessengerService.MessengerBinder binder = (MessengerService.MessengerBinder) service;
             ChatActivity.this.messenger = binder.getService();
 
-            messenger.setReceiver(new MessageParser(ChatActivity.this));
+            parser = new MessageParser(ChatActivity.this);
+            messenger.setReceiver(parser);
             Timer mTimer = new Timer();
             timer_task = new TimerTick();
             mTimer.scheduleAtFixedRate(timer_task, 1000, 1000);
@@ -248,7 +250,10 @@ public class ChatActivity extends AppCompatActivity implements
     @Override
     protected void onDestroy() {
         if (timer_task != null) timer_task.cancel();
-        if (messenger != null) unbindService(connection);
+        if (messenger != null) {
+            messenger.unbindReceiver(parser);
+            unbindService(connection);
+        }
         super.onDestroy();
     }
 

@@ -96,6 +96,7 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
     @Override
     protected void onDestroy() {
         if (messenger != null) {
+            messenger.unbindReceiver(this);
             unbindService(connection);
         }
         super.onDestroy();
@@ -244,7 +245,7 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
         }
     }
 
-    public class EnqueueClick implements View.OnClickListener { //TODO: Make ability to cancel enqueue
+    public class EnqueueClick implements View.OnClickListener {
 
         /**
          * Handles click from the view (actually, from floating button)

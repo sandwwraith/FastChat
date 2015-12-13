@@ -39,13 +39,15 @@ public class VotingActivity extends AppCompatActivity implements MessageParser.M
     private VoteTimer voteTimer = null;
 
     private MessengerService messenger = null;
+    private MessageParser parser;
     private ServiceConnection connection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
             MessengerService.MessengerBinder binder = (MessengerService.MessengerBinder) service;
             VotingActivity.this.messenger = binder.getService();
 
-            messenger.setReceiver(new MessageParser(VotingActivity.this));
+            parser = new MessageParser(VotingActivity.this);
+            messenger.setReceiver(parser);
 
             findViewById(R.id.button_like).setOnClickListener(VotingActivity.this);
             findViewById(R.id.button_dislike).setOnClickListener(VotingActivity.this);
@@ -212,7 +214,10 @@ public class VotingActivity extends AppCompatActivity implements MessageParser.M
 
     @Override
     protected void onDestroy() {
-        if (messenger != null) unbindService(connection);
+        if (messenger != null) {
+            messenger.unbindReceiver(parser);
+            unbindService(connection);
+        }
         super.onDestroy();
     }
 

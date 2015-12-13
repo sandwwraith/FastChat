@@ -13,6 +13,7 @@ import com.sandwwraith.fastchat.clientUtils.MessageSerializer;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.ref.WeakReference;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.Arrays;
@@ -37,8 +38,8 @@ public class MessengerService extends Service {
     private final MessengerBinder binder = new MessengerBinder();
     private Socket sock = null;
     private boolean socketAvailable = false;
-    private connectResultHandler connectCallback = null;
-    private messageHandler messageCallback = null;
+    private WeakReference<connectResultHandler> connectCallback = null;
+    private WeakReference<messageHandler> messageCallback = null;
     private ReceiveTask receiveTask = null;
     private int users = 0;
     private KillTask killer = null;
@@ -75,7 +76,7 @@ public class MessengerService extends Service {
      * @param callback Вызывается onConnectResult при завершении
      */
     public void connect(connectResultHandler callback) {
-        this.connectCallback = callback;
+        this.connectCallback = new WeakReference<>(callback);
         new ConnectionTask().execute();
     }
 
@@ -103,9 +104,19 @@ public class MessengerService extends Service {
     public void setReceiver(messageHandler callback) throws IllegalStateException {
 //        if (!connected()) throw new IllegalStateException("Not connected");
         if (receiveTask != null) receiveTask.cancel(false);
-        this.messageCallback = callback;
+        this.messageCallback = new WeakReference<>(callback);
         receiveTask = new ReceiveTask();
         receiveTask.execute();
+    }
+
+    public void unbindReceiver(messageHandler callback) {
+        if (messageCallback != null) {
+            if (messageCallback.get() == callback) {
+                messageCallback.clear();
+                messageCallback = null;
+                receiveTask.cancel(true);
+            }
+        }
     }
 
     public interface connectResultHandler {
@@ -130,7 +141,10 @@ public class MessengerService extends Service {
         @Override
         protected void onPostExecute(Boolean aBoolean) {
             socketAvailable = aBoolean;
-            connectCallback.onConnectResult(aBoolean, users);
+            if (connectCallback != null) {
+                connectResultHandler call = connectCallback.get();
+                if (call != null) call.onConnectResult(aBoolean, users);
+            }
         }
 
         @Override
@@ -235,8 +249,10 @@ public class MessengerService extends Service {
 
         @Override
         protected void onProgressUpdate(byte[]... values) {
-            if (MessengerService.this.messageCallback != null)
-                MessengerService.this.messageCallback.processMessage(values[0]);
+            if (MessengerService.this.messageCallback != null) {
+                messageHandler call = messageCallback.get();
+                if (call != null) call.processMessage(values[0]);
+            }
         }
     }
 
