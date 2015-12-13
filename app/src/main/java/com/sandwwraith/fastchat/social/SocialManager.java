@@ -11,6 +11,7 @@ import com.sandwwraith.fastchat.AuthActivity;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.ref.WeakReference;
 import java.net.URL;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -62,7 +63,7 @@ public class SocialManager {
         }
         String token = sp.getString(type.getTokenString(), "");
         String id = sp.getString(type.getIdString(), "");
-        new UserInfoTask().execute(type.name(), token, id);
+        new UserInfoTask(callback).execute(type.name(), token, id);
     }
 
     /**
@@ -95,7 +96,7 @@ public class SocialManager {
         sp.apply();
 
         //Launch updateInfo
-        new UserInfoTask().execute(type_s, tok, id);
+        new UserInfoTask(callback).execute(type_s, tok, id);
     }
 
     public enum Types {
@@ -155,10 +156,17 @@ public class SocialManager {
      * onPreExecute выполняется моментально, а onPostExecute зачем то ждет
      * выполнения запланированого KillerTask в MessengerService, который с ним вроде бы никак не связан.
      * WTF ???!1
+     * Кажется, решилось введением слабых ссылок
      */
-    private class UserInfoTask extends AsyncTask<String, Void, SocialUser> {
-        Types type;
-        SocialWrapper.ErrorStorage lastError = null;
+    private static class UserInfoTask extends AsyncTask<String, Void, SocialUser> {
+        private static final String LOG_TAG = "user_info_loader";
+        private final WeakReference<SocialManagerCallback> callback;
+        private Types type;
+        private SocialWrapper.ErrorStorage lastError = null;
+
+        UserInfoTask(SocialManagerCallback call) {
+            callback = new WeakReference<>(call);
+        }
 
         @Override
         protected void onPreExecute() {
@@ -169,10 +177,13 @@ public class SocialManager {
         protected void onPostExecute(SocialUser socialUser) {
             SocialManager.saveUser(type, socialUser);
             //callback.onUserInfoUpdated(socialUser != null, socialUser);
-            if (socialUser != null) {
-                callback.onUserInfoUpdated(socialUser);
-            } else {
-                callback.onUserInfoFailed(type, this.lastError);
+            SocialManagerCallback call = callback.get();
+            if (call != null) {
+                if (socialUser != null) {
+                    call.onUserInfoUpdated(socialUser);
+                } else {
+                    call.onUserInfoFailed(type, this.lastError);
+                }
             }
         }
 

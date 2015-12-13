@@ -96,7 +96,7 @@ public class MessengerService extends Service {
     }
 
     /**
-     * Запускает поток, который будет "слушать" входящий с сервера поток
+     * Запускает поток, который будет "слушать" входящие с сервера данные
      *
      * @param callback Функиция, которая будет вызвана при получении сообщения
      * @throws IllegalStateException Если сокет не соединён
@@ -109,6 +109,12 @@ public class MessengerService extends Service {
         receiveTask.execute();
     }
 
+    /**
+     * Снимает заднный callback с прослушивания
+     *
+     * @param callback Если эта функция совпадает с текущим ресивером, она будет отменена
+     *                 Иначе ничего не происходит
+     */
     public void unbindReceiver(messageHandler callback) {
         if (messageCallback != null) {
             if (messageCallback.get() == callback) {
@@ -138,6 +144,7 @@ public class MessengerService extends Service {
      */
     private class ConnectionTask extends AsyncTask<Void, Void, Boolean> {
         int users = -1;
+
         @Override
         protected void onPostExecute(Boolean aBoolean) {
             socketAvailable = aBoolean;
