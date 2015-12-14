@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="conv_themes">
+        <item>Talk about your favorite TV series!</item>
+        <item>Share your impressions of last read book!</item>
+        <item>Cats or dogs?</item>
+        <item>What music do you listen to?</item>
+        <item>What was the last movie you\'ve seen?</item>
+        <item>Who is primary in relationships: man or woman?</item>
+        <item>Throw back to your first love!</item>
+        <item>Does Di Caprio deserve the Oscar award?</item>
+        <item>What is/was your favorite subject at school/university?</item>
+        <item>Do you believe in love at first sight?</item>
+        <item>Coca-Cola or Pepsi?</item>
+        <item>Tell about your hometown!</item>
+        <item>Do you like video games?</item>
+        <item>What was your first cell phone?</item>
+        <item>What languages do you speak?</item>
+        <item>Tell about your last adventure!</item>
+        <item>Can one find his love on the Internet?</item>
+        <item>Talk about your favorite sports!</item>
+        <item>Where do you study/work?</item>
+        <item>Tell about the gift you remembered the most!</item>
+        <item>What are you going to change in your life next year?</item>
+        <item>Television: old-fashioned or still cool?</item>
+        <item>What would you ask genie to do if you had only one wish?</item>
+        <item>If you had time machine, what year would you visit?</item>
+        <item>Do you like using emojis in your messages?</item>
+        <item>What is your dream job?</item>
+        <item>Fast food: bad or good?</item>
+        <item>What countries have you been to? Which was best?</item>
+        <item>What is your favorite food?</item>
+        <item>What is the last photo you posted on your Instagram?</item>
+        <item>What is your favorite mobile app?</item>
+        <item>Summer or winter?</item>
+        <item>Imagine you are a president for one day. What yould you change?</item>
+        <item>What would you buy if you won a million $ in a lottery?</item>
+        <item>If you had enough money to make a movie what would it be about?</item>
+        <item>Remember the funniest story which happened to you!</item>
+        <item>Comedy or drama?</item>
+        <item>Are you morning or night person?</item>
+        <item>Who are your favorite actor and actress?</item>
+        <item>The bitter truth or a sugar-coated lie?</item>
+        <item>Do you believe in reincarnation?</item>
+        <item>What was your favorite game as a child?</item>
+        <item>Which celebrity would you like to hang out with?</item>
+        <item>What was your last dream about?</item>
+        <item>If you were an animal, what would you be?</item>
+        <item>What superpower would you like to have?</item>
+        <item>Do you believe in ghosts?</item>
+        <item>Who is the person who inspires you the most?</item>
+        <item>What do you think about tatoos?</item>
+        <item>Tell about your best and worst character traits!</item>
+    </string-array>
+</resources>
