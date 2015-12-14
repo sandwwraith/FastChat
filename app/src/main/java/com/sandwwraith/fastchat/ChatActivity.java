@@ -88,6 +88,11 @@ public class ChatActivity extends AppCompatActivity implements
         bindService(intent, connection, Context.BIND_AUTO_CREATE);
     }
 
+    private String getThemeString(int index) {
+        String[] arr = getResources().getStringArray(R.array.conv_themes);
+        return arr[index];
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,7 +102,7 @@ public class ChatActivity extends AppCompatActivity implements
 
         Intent x = getIntent();
         op_name = (x == null ? null : x.getStringExtra(NAME_INTENT));
-        String theme = (x == null ? null : "Theme " + x.getIntExtra(THEME_INTENT, 42));
+        int themecode = (x == null ? -1 : x.getIntExtra(THEME_INTENT, 42));
 
         Log.d(LOG_TAG, x == null ? "Intent null" : "Intent not null");
         Log.d(LOG_TAG, savedInstanceState == null ? "SavedState null" : "SavedState not null");
@@ -108,9 +113,9 @@ public class ChatActivity extends AppCompatActivity implements
 
         //noinspection ConstantConditions
         getSupportActionBar().setTitle(op_name);
-        getSupportActionBar().setSubtitle(theme);
+//        getSupportActionBar().setSubtitle(getThemeString(themecode));
         editText = (EditText) findViewById(R.id.msg_text);
-
+        messages.add(new MessageHolder(getThemeString(themecode)));
        /* String[] testMess = {"Small text", "Medium text which can take a lot", "Very very very very long text probably on severl" +
                 "strings I don't even know how much can it take it also has difficult words such as supercalifragilisticexpialidocious"};
         for (int i = 0; i < 15; i++)
@@ -274,13 +279,22 @@ public class ChatActivity extends AppCompatActivity implements
         public void onBindViewHolder(ViewHolder holder, int position) {
             MessageHolder h = messages.get(position);
 
+            if (position == 0) {
+                //Окошко с темой
+                holder.message.setBackgroundResource(0);
+                holder.timeStamp.setVisibility(View.GONE);
+                holder.layout.setGravity(Gravity.CENTER_HORIZONTAL);
+                return;
+            }
+
             holder.message.setText(h.getMessage());
             holder.timeStamp.setText(h.getFormattedDate());
 
             if (h.getType() == MessageHolder.M_SEND) {
                 holder.message.setBackgroundResource(R.drawable.speech_bubble_my);
                 holder.layout.setGravity(Gravity.RIGHT);
-            } else {holder.message.setBackgroundResource(R.drawable.speech_bubble_partner);
+            } else {
+                holder.message.setBackgroundResource(R.drawable.speech_bubble_partner);
                 holder.layout.setGravity(Gravity.LEFT);
             }
         }
