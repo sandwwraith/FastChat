@@ -34,6 +34,7 @@ import com.sandwwraith.fastchat.clientUtils.Pair;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -115,7 +116,7 @@ public class ChatActivity extends AppCompatActivity implements
 //        getSupportActionBar().setSubtitle(getThemeString(themecode));
         editText = (EditText) findViewById(R.id.msg_text);
         messages.add(new MessageHolder(getThemeString(themecode)));
-       /* String[] testMess = {"Small text", "Medium text which can take a lot", "Very very very very long text probably on severl" +
+        /*String[] testMess = {"Small text", "Medium text which can take a lot", "Very very very very long text probably on severl" +
                 "strings I don't even know how much can it take it also has difficult words such as supercalifragilisticexpialidocious"};
         for (int i = 0; i < 15; i++)
             messages.add(new MessageHolder(new Pair<>(new Date(), testMess[new Random().nextInt(3)]),
@@ -138,6 +139,7 @@ public class ChatActivity extends AppCompatActivity implements
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new RecyclerAdapter();
         recyclerView.setAdapter(adapter);
+        recyclerView.smoothScrollToPosition(adapter.getItemCount());
 
         connectService();
     }
