@@ -1,4 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string name="app_name">FastChat</string>
     <string name="action_settings">Settings</string>
     <string name="connecting">Connecting…</string>
@@ -23,4 +25,7 @@
     <string name="no">No</string>
     <string name="users_online">Users online:</string>
     <string name="vote_fail">Voting isn\'t successful</string>
+    <string name="title_activity_history">HistoryActivity</string>
+    <string name="hello_world">Hello world!</string>
+
 </resources>

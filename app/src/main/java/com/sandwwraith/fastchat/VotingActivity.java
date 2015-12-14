@@ -4,8 +4,10 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +17,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.sandwwraith.fastchat.chatUtils.UserHolder;
 import com.sandwwraith.fastchat.clientUtils.MessageParser;
 import com.sandwwraith.fastchat.clientUtils.MessageSerializer;
 import com.sandwwraith.fastchat.clientUtils.Pair;
@@ -22,6 +25,8 @@ import com.sandwwraith.fastchat.social.SocialManager;
 
 import java.text.DecimalFormat;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -29,6 +34,7 @@ public class VotingActivity extends AppCompatActivity implements MessageParser.M
 
     public final static String LOG_TAG = "vote_activity";
     public static final String ENQUEUE_NOW = "ENQUEUE_NOW";
+    public static final String SUCCESS_VOTE_KEY = "SUCCESS_VOTE_KEY";
     private TextView textName;
     private TextView timerTextView;
 
@@ -172,6 +178,16 @@ public class VotingActivity extends AppCompatActivity implements MessageParser.M
             textName.setText(op_result.first);
             TextView url = ((TextView) findViewById(R.id.url_place));
             url.setText(op_result.second);
+
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+            Set<String> success_votes = new HashSet<>();
+            Set<String> old_votes = sharedPref.getStringSet(SUCCESS_VOTE_KEY, success_votes);
+            // According to the docs, we cannot modify old_votes;
+            success_votes.addAll(old_votes);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            success_votes.add(new UserHolder(op_result.first, op_result.second).ConvertToJson());
+
+            editor.putStringSet(SUCCESS_VOTE_KEY, success_votes).apply();
         } else {
             Snackbar.make(textName, R.string.vote_fail, Snackbar.LENGTH_SHORT)
                     .setAction("Action", null).show(); //TODO: Proper notification

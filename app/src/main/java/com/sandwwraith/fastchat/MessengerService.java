@@ -22,7 +22,7 @@ import java.util.TimerTask;
 
 public class MessengerService extends Service {
 
-    public static final String ADDRESS = "10.10.10.18";
+    public static final String ADDRESS = "52.59.255.94";
     public static final int PORT = 2539;
     public static final int TIMEOUT = 5000; //in ms
     private static final String LOG_TAG = "msg_service";
