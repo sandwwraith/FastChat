@@ -34,7 +34,8 @@
             android:name=".ChatActivity"
             android:label=""
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".VotingActivity"
             android:label="@string/title_activity_voting"

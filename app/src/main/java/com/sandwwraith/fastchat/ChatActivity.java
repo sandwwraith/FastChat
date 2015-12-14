@@ -290,6 +290,8 @@ public class ChatActivity extends AppCompatActivity implements
 
             holder.message.setText(h.getMessage());
             holder.timeStamp.setText(h.getFormattedDate());
+            holder.timeStamp.setVisibility(View.VISIBLE);
+            holder.message.setTypeface(null, Typeface.NORMAL); //Need to restore recycled parameters
 
             if (h.getType() == MessageHolder.M_SEND) {
                 holder.message.setBackgroundResource(R.drawable.speech_bubble_my);
