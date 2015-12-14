@@ -12,23 +12,7 @@ import java.util.Date;
  */
 public class MessageParser implements MessengerService.messageHandler {
 
-    public interface MessageResult {
-        void onPairFound(Pair<int[], String> companion);
-
-        void onTextMessageReceived(Pair<Date, String> message);
-
-        void onTimeout();
-
-        void onVotingResults(Pair<String, String> voted);
-
-        void onLeave();
-
-        void onServerError();
-
-        void onMalformedSequence(@Nullable String errorDescription);
-    }
-
-    private MessageResult callBack;
+    private final MessageResult callBack;
 
     public MessageParser(MessageResult callBack) {
         this.callBack = callBack;
@@ -71,5 +55,21 @@ public class MessageParser implements MessengerService.messageHandler {
     @Override
     public void processMessage(byte[] bytes) {
         parse(bytes);
+    }
+
+    public interface MessageResult {
+        void onPairFound(Pair<int[], String> companion);
+
+        void onTextMessageReceived(Pair<Date, String> message);
+
+        void onTimeout();
+
+        void onVotingResults(Pair<String, String> voted);
+
+        void onLeave();
+
+        void onServerError();
+
+        void onMalformedSequence(@Nullable String errorDescription);
     }
 }

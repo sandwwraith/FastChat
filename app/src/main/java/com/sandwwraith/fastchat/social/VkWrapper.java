@@ -14,9 +14,9 @@ import java.net.URL;
  */
 public class VkWrapper implements SocialWrapper {
 
+    private final static String LOG_TAG = "vk_wrapper";
+    private final static String AppID = "5154453";
     private static ErrorStorage lastError = null;
-    private final String LOG_TAG = "vk_wrapper";
-    String AppID = "5154453";
 
     @Override
     public String retrieveToken(String url) {

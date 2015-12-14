@@ -14,7 +14,7 @@ import com.sandwwraith.fastchat.R;
  * ITMO University, 2015.
  */
 public class LeaveDialogFragment extends DialogFragment {
-    LeaveDialogFragmentListener callBack;
+    private LeaveDialogFragmentListener callBack;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {

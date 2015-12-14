@@ -40,7 +40,7 @@ public class VotingActivity extends AppCompatActivity implements MessageParser.M
 
     private MessengerService messenger = null;
     private MessageParser parser;
-    private ServiceConnection connection = new ServiceConnection() {
+    private final ServiceConnection connection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
             MessengerService.MessengerBinder binder = (MessengerService.MessengerBinder) service;
@@ -173,7 +173,7 @@ public class VotingActivity extends AppCompatActivity implements MessageParser.M
             TextView url = ((TextView) findViewById(R.id.url_place));
             url.setText(op_result.second);
         } else {
-            Snackbar.make(textName, "Voting isn't successful", Snackbar.LENGTH_SHORT)
+            Snackbar.make(textName, R.string.vote_fail, Snackbar.LENGTH_SHORT)
                     .setAction("Action", null).show(); //TODO: Proper notification
         }
         Button again = (Button) findViewById(R.id.try_again_button);

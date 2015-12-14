@@ -22,7 +22,7 @@ import javax.net.ssl.HttpsURLConnection;
  */
 public class SocialManager {
 
-    private static SocialUser[] users = new SocialUser[Types.values().length]; //Freaking
+    private static final SocialUser[] users = new SocialUser[Types.values().length]; //Freaking
     private final String LOG_TAG = "social_manager";
     private Activity prefHost;
     private SocialManagerCallback callback;

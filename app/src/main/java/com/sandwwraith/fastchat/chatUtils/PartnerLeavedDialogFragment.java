@@ -14,7 +14,7 @@ import com.sandwwraith.fastchat.R;
  * ITMO University, 2015.
  */
 public class PartnerLeavedDialogFragment extends DialogFragment {
-    PartnerLeavedDialogListener mListener;
+    private PartnerLeavedDialogListener mListener;
 
     @Override
     public void onAttach(Activity activity) {

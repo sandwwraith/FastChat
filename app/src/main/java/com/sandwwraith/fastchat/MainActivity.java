@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
     //Refer to documentation, "Bound service"
     //or to lesson #5
     private MessengerService messenger = null;
-    private ServiceConnection connection = new ServiceConnection() {
+    private final ServiceConnection connection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
             MessengerService.MessengerBinder binder = (MessengerService.MessengerBinder) service;
@@ -197,12 +197,12 @@ public class MainActivity extends AppCompatActivity implements MessengerService.
                 into(img);
     }
 
-    public void notifyUser(String message) {
+    private void notifyUser(String message) {
         Snackbar.make(messageView, message, Snackbar.LENGTH_SHORT)
                 .setAction("Action", null).show();
     }
 
-    public void notifyUser(int resourceId) {
+    private void notifyUser(int resourceId) {
         String msg = getResources().getString(resourceId);
         notifyUser(msg);
     }

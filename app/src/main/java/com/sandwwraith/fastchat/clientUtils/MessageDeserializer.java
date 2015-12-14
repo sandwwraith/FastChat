@@ -112,9 +112,6 @@ public class MessageDeserializer {
     }
 
     public static class MessageDeserializerException extends Exception {
-        MessageDeserializerException() {
-            super();
-        }
 
         MessageDeserializerException(String s) {
             super(s);

@@ -4,7 +4,7 @@ package com.sandwwraith.fastchat.clientUtils;
  * Created by sandwwraith(@gmail.com)
  * ITMO University, 2015.
  */
-public class MessageType {
+class MessageType {
     public static final byte QUEUE = 1;
     public static final byte MESSAGE = 2;
     public static final byte TIMEOUT = 3;

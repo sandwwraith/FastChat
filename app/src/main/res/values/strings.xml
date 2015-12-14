@@ -22,4 +22,5 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="users_online">Users online:</string>
+    <string name="vote_fail">Voting isn\'t successful</string>
 </resources>

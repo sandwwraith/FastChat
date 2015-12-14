@@ -38,6 +38,7 @@
         <activity
             android:name=".VotingActivity"
             android:label="@string/title_activity_voting"
+            android:screenOrientation="locked"
             android:theme="@style/AppTheme.NoActionBar" />
     </application>
 

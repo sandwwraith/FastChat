@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -45,17 +46,15 @@ public class ChatActivity extends AppCompatActivity implements
     public static final String GENDER_INTENT = "GENDER_INTENT";
     public static final String THEME_INTENT = "THEME_INTENT";
 
-    public static final String SECONDS_STATE = "CHAT_SECONDS";
+    private static final String SECONDS_STATE = "CHAT_SECONDS";
 
-    public static final String LOG_TAG = "chat_activity";
-    RecyclerView recyclerView;
+    private static final String LOG_TAG = "chat_activity";
+    private final ArrayList<MessageHolder> messages = new ArrayList<>(); //TODO: Save messages... or just prohibit rotation ???
+    private RecyclerView recyclerView;
     private MenuItem timerView;
     private RecyclerAdapter adapter;
     private EditText editText;
     private TimerTick timer_task;
-
-    private ArrayList<MessageHolder> messages = new ArrayList<>(); //TODO: Save messages... or just prohibit rotation ???
-
     private int seconds = 5 * 60;
     private String op_name = "";
 
@@ -64,7 +63,7 @@ public class ChatActivity extends AppCompatActivity implements
     //or to lesson #5
     private MessengerService messenger = null;
     private MessageParser parser = null;
-    private ServiceConnection connection = new ServiceConnection() {
+    private final ServiceConnection connection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
             MessengerService.MessengerBinder binder = (MessengerService.MessengerBinder) service;
@@ -281,7 +280,9 @@ public class ChatActivity extends AppCompatActivity implements
 
             if (position == 0) {
                 //Окошко с темой
+                holder.message.setText(h.getMessage());
                 holder.message.setBackgroundResource(0);
+                holder.message.setTypeface(null, Typeface.ITALIC);
                 holder.timeStamp.setVisibility(View.GONE);
                 holder.layout.setGravity(Gravity.CENTER_HORIZONTAL);
                 return;

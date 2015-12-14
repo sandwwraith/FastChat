@@ -27,7 +27,7 @@ public class MessageHolder {
      */
     public MessageHolder(Pair<Date, String> msg, int type) {
         this.type = type;
-        this.time = msg.first;
+        this.time = new Date(); //Время получения на этом устройстве, а не отправки на том
         this.msg = msg.second;
     }
 
