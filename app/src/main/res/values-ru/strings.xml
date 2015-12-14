@@ -22,4 +22,5 @@
     <string name="yes">Да</string>
     <string name="users_online">Пользователей онлайн:</string>
     <string name="vote_fail">Голосование безуспешно =(</string>
+    <string name="title_activity_history">История</string>
 </resources>
