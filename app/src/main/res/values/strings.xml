@@ -15,7 +15,7 @@
     <string name="text_dislike">Dislike</string>
     <string name="voting_greet">Did you like your partner?</string>
     <string name="timeout_msg">Time out!</string>
-    <string name="confirm_leave_title">Are you really want to leave?</string>
+    <string name="confirm_leave_title">Do you really want to leave?</string>
     <string name="leave_confirm">Leave</string>
     <string name="cancel">Cancel</string>
     <string name="try_again">Try again!</string>

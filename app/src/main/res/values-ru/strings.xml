@@ -23,4 +23,6 @@
     <string name="users_online">Пользователей онлайн:</string>
     <string name="vote_fail">Голосование безуспешно =(</string>
     <string name="title_activity_history">История</string>
+    <string name="text_like">Здорово</string>
+    <string name="text_dislike">Не очень</string>
 </resources>

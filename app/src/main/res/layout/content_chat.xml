@@ -15,6 +15,7 @@
     <LinearLayout
         android:id="@+id/linear"
         android:layout_width="match_parent"
+        android:focusableInTouchMode="true"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true">
 
@@ -23,6 +24,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="5"
+            android:maxLines="4"
             android:hint="@string/messagefield_hint"
             android:inputType="textCapSentences|textMultiLine|textAutoCorrect|text" />
 
@@ -39,9 +41,10 @@
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler"
+        android:layout_above="@+id/linear"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/linear"
-        android:layout_alignParentTop="true" />
+        android:layout_alignParentTop="true"
+        />
 
 </RelativeLayout>

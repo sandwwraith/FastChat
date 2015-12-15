@@ -66,6 +66,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:gravity="center"
                     android:text="@string/loading"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
             </FrameLayout>
@@ -79,6 +80,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:gravity="center"
                     android:text="Not implemented"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
             </FrameLayout>
