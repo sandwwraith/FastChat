@@ -2,9 +2,11 @@ package com.sandwwraith.fastchat;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.sandwwraith.fastchat.clientUtils.MessageDeserializer;
@@ -22,7 +24,8 @@ import java.util.TimerTask;
 
 public class MessengerService extends Service {
 
-    public static final String ADDRESS = "52.59.255.94";
+
+    public static final String ADDRESS_KEY = "MESSENGER_SERVICE_ADDRESS_KEY";
     public static final int PORT = 2539;
     public static final int TIMEOUT = 5000; //in ms
     private static final String LOG_TAG = "msg_service";
@@ -142,7 +145,21 @@ public class MessengerService extends Service {
      * Открывает сокет
      */
     private class ConnectionTask extends AsyncTask<Void, Void, Boolean> {
+        //    public static final String ADDRESS = "52.59.255.94";
+        public String ADDRESS = "10.10.10.18";
         int users = -1;
+
+        /**
+         * Runs on the UI thread before {@link #doInBackground}.
+         *
+         * @see #onPostExecute
+         * @see #doInBackground
+         */
+        @Override
+        protected void onPreExecute() {
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+            ADDRESS = sharedPref.getString(ADDRESS_KEY, ADDRESS);
+        }
 
         @Override
         protected void onPostExecute(Boolean aBoolean) {

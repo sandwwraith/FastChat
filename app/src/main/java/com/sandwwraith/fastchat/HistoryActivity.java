@@ -1,24 +1,20 @@
 package com.sandwwraith.fastchat;
 
 import android.content.SharedPreferences;
-import android.graphics.Typeface;
-import android.preference.PreferenceManager;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.sandwwraith.fastchat.chatUtils.MessageHolder;
 import com.sandwwraith.fastchat.chatUtils.UserHolder;
 
 import java.util.ArrayList;
@@ -27,9 +23,10 @@ import java.util.Set;
 
 
 public class HistoryActivity extends AppCompatActivity {
+    private final ArrayList<UserHolder> success_votings = new ArrayList<>();
     private RecyclerView recyclerView;
     private RecyclerAdapter adapter;
-    private final ArrayList<UserHolder> success_votings = new ArrayList<>();
+    private EditText ipText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +48,9 @@ public class HistoryActivity extends AppCompatActivity {
 
         adapter.notifyDataSetChanged();
         recyclerView.smoothScrollToPosition(adapter.getItemCount());
+
+        ipText = (EditText) findViewById(R.id.ip_text);
+        ipText.setText(sharedPref.getString(MessengerService.ADDRESS_KEY, ""));
     }
 
 
@@ -63,6 +63,13 @@ public class HistoryActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onDestroy() {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        sharedPref.edit().putString(MessengerService.ADDRESS_KEY, ipText.getText().toString()).apply();
+        super.onDestroy();
     }
 
     private class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder> {
