@@ -142,18 +142,14 @@ public class MessengerService extends Service {
     }
 
     /**
-     * Открывает сокет
+     * Opens socket and receives greetings
      */
     private class ConnectionTask extends AsyncTask<Void, Void, Boolean> {
-        //    public static final String ADDRESS = "52.59.255.94";
-        public String ADDRESS = "10.10.10.18";
+        public String ADDRESS = "10.10.10.18"; //Default server IP (local network)
         int users = -1;
 
         /**
-         * Runs on the UI thread before {@link #doInBackground}.
-         *
-         * @see #onPostExecute
-         * @see #doInBackground
+         * Loads server IP from application preferences
          */
         @Override
         protected void onPreExecute() {
@@ -183,7 +179,7 @@ public class MessengerService extends Service {
             }
 
             try {
-                //Приём сообщения, сразу посылаемого сервером новым клиентам
+                //Receiving greetings
                 byte[] greet = new byte[5];
                 if (sock.getInputStream().read(greet, 0, 5) < 5)
                     throw new IOException("Not enough length!");
@@ -206,7 +202,7 @@ public class MessengerService extends Service {
     }
 
     /**
-     * Запускает один поток для отправки сообщения на сервер, закрывается
+     * Starts thread to send data to server; closes thread after send.
      */
     private class DataSender implements Runnable {
         private final byte[] message;
@@ -237,8 +233,8 @@ public class MessengerService extends Service {
     }
 
     /**
-     * Поток, который постоянно запущен и получает сообщения с сервера.
-     * Вызывает callback в UI потоке.
+     * Background thread which listens to server.
+     * Calls function on UI thread when message is received.
      */
     private class ReceiveTask extends AsyncTask<Void, byte[], Void> {
 
@@ -248,7 +244,6 @@ public class MessengerService extends Service {
             try {
                 in = sock.getInputStream();
                 while (!isCancelled()) {
-                    //Крутимся, пока не был отменён приём
 
                     if (in.available() > 0) {
                         Log.d(MessengerService.LOG_TAG, "Available: " + in.available());
@@ -280,8 +275,8 @@ public class MessengerService extends Service {
     }
 
     /**
-     * Поток, который посылает сообщение на сервер о завершении работы
-     * и закрывает все соединения
+     * Thread which sends to server disconnect message
+     * and closes all connections.
      */
     private class KillTask extends TimerTask {
         @Override
